@@ -153,24 +153,29 @@ export const OnboardingTour: React.FC = () => {
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentStep}
-                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    initial={{
+                        opacity: 0,
+                        scale: 0.9,
+                        x: step.targetId === 'welcome-step' ? '-50%' : 0,
+                        y: step.targetId === 'welcome-step' ? '-40%' : (step.position === 'top' ? '-90%' : 10)
+                    }}
+                    animate={{
+                        opacity: 1,
+                        scale: 1,
+                        x: step.targetId === 'welcome-step' ? '-50%' : 0,
+                        y: step.targetId === 'welcome-step' ? '-50%' : (step.position === 'top' ? '-100%' : 0)
+                    }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     style={{
                         position: 'absolute',
                         top: step.targetId === 'welcome-step'
                             ? '50%'
                             : step.position === 'top'
-                                ? targetRect.top - 24 // 24px gap above
-                                : targetRect.bottom + 24, // 24px gap below
+                                ? targetRect.top - 24
+                                : targetRect.bottom + 24,
                         left: step.targetId === 'welcome-step'
                             ? '50%'
                             : Math.max(20, Math.min(window.innerWidth - 320, targetRect.left + targetRect.width / 2 - 150)),
-                        transform: step.targetId === 'welcome-step'
-                            ? 'translate(-50%, -50%)'
-                            : step.position === 'top'
-                                ? 'translateY(-100%)' // Move up by its own height
-                                : 'none'
                     }}
                     className="w-[90vw] max-w-[300px] bg-card border border-border rounded-xl shadow-2xl p-6 z-[101] text-card-foreground pointer-events-auto"
                 >
