@@ -156,13 +156,13 @@ export const OnboardingTour: React.FC = () => {
                     initial={{
                         opacity: 0,
                         scale: 0.9,
-                        x: step.targetId === 'welcome-step' ? '-50%' : 0,
+                        x: '-50%',
                         y: step.targetId === 'welcome-step' ? '-40%' : (step.position === 'top' ? '-90%' : 10)
                     }}
                     animate={{
                         opacity: 1,
                         scale: 1,
-                        x: step.targetId === 'welcome-step' ? '-50%' : 0,
+                        x: '-50%',
                         y: step.targetId === 'welcome-step' ? '-50%' : (step.position === 'top' ? '-100%' : 0)
                     }}
                     exit={{ opacity: 0, scale: 0.9 }}
@@ -173,9 +173,26 @@ export const OnboardingTour: React.FC = () => {
                             : step.position === 'top'
                                 ? targetRect.top - 24
                                 : targetRect.bottom + 24,
-                        left: step.targetId === 'welcome-step'
-                            ? '50%'
-                            : Math.max(20, Math.min(window.innerWidth - 320, targetRect.left + targetRect.width / 2 - 150)),
+                        left: (() => {
+                            if (step.targetId === 'welcome-step') return '50%';
+
+                            // Calculate target center
+                            const targetCenter = targetRect.left + targetRect.width / 2;
+
+                            // Card width estimate (approximate since we use 90vw/300px)
+                            const cardWidth = Math.min(window.innerWidth * 0.9, 300);
+                            const halfCard = cardWidth / 2;
+
+                            // Smart Clamp: Ensure card stays within screen padding (16px)
+                            const minX = 16 + halfCard;
+                            const maxX = window.innerWidth - 16 - halfCard;
+
+                            // Clamp the center point
+                            const clampedCenter = Math.max(minX, Math.min(maxX, targetCenter));
+
+                            // Return the left position (transform -50% will center it)
+                            return clampedCenter;
+                        })(),
                     }}
                     className="w-[90vw] max-w-[300px] bg-card border border-border rounded-xl shadow-2xl p-6 z-[101] text-card-foreground pointer-events-auto"
                 >
