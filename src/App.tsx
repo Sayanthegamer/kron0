@@ -68,6 +68,8 @@ const AppContent: React.FC = () => {
   );
 };
 
+import { OnboardingTour } from './components/OnboardingTour';
+
 // Main App with Auth Check
 const AuthenticatedApp: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -89,6 +91,7 @@ const AuthenticatedApp: React.FC = () => {
       <FocusProvider>
         <TodoProvider>
           <AppContent />
+          <OnboardingTour />
         </TodoProvider>
       </FocusProvider>
     </TimetableProvider>

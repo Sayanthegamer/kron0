@@ -1,62 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw } from 'lucide-react';
-
-type TimerMode = 'focus' | 'short' | 'long';
-
-const MODES: Record<TimerMode, { label: string; minutes: number; color: string }> = {
-    focus: { label: 'Focus', minutes: 25, color: 'text-primary' },
-    short: { label: 'Short Break', minutes: 5, color: 'text-teal-500' },
-    long: { label: 'Long Break', minutes: 15, color: 'text-indigo-500' },
-};
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Pause, RotateCcw, Settings2 } from 'lucide-react';
+import { useFocus, MODES } from '../context/FocusContext';
+import type { TimerMode } from '../context/FocusContext';
 
 export const FocusMode: React.FC = () => {
-    const [mode, setMode] = useState<TimerMode>('focus');
-    const [timeLeft, setTimeLeft] = useState(MODES.focus.minutes * 60);
-    const [isActive, setIsActive] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-
-    // Initialize audio
-    useEffect(() => {
-        audioRef.current = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
-    }, []);
-
-    useEffect(() => {
-        let interval: ReturnType<typeof setInterval>;
-
-        if (isActive && timeLeft > 0) {
-            interval = setInterval(() => {
-                setTimeLeft((time) => time - 1);
-            }, 1000);
-        } else if (timeLeft === 0) {
-            setIsActive(false);
-            if (audioRef.current) {
-                audioRef.current.play().catch(e => console.log('Audio play failed', e));
-            }
-            // Optional: Send a notification if permission granted
-            if (Notification.permission === 'granted') {
-                new Notification("Timer Complete!", {
-                    body: `${MODES[mode].label} finished.`,
-                    icon: '/logo.svg'
-                });
-            }
-        }
-
-        return () => clearInterval(interval);
-    }, [isActive, timeLeft, mode]);
-
-    const toggleTimer = () => setIsActive(!isActive);
-
-    const resetTimer = () => {
-        setIsActive(false);
-        setTimeLeft(MODES[mode].minutes * 60);
-    };
-
-    const switchMode = (newMode: TimerMode) => {
-        setMode(newMode);
-        setIsActive(false);
-        setTimeLeft(MODES[newMode].minutes * 60);
-    };
+    const {
+        mode,
+        setMode,
+        timeLeft,
+        isActive,
+        toggleTimer,
+        resetTimer,
+        setCustomDuration
+    } = useFocus();
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -65,8 +22,14 @@ export const FocusMode: React.FC = () => {
     };
 
     // Circular Progress Calculation
-    const totalTime = MODES[mode].minutes * 60;
-    const progress = ((totalTime - timeLeft) / totalTime) * 100;
+    const currentTotalTime = (mode === 'custom')
+        ? (MODES.custom.minutes * 60) // Note: This will jump if custom duration changes, that's okay for now
+        : MODES[mode].minutes * 60;
+
+    // Fix progress bar jumping for custom: Re-calculate based on initial timeLeft if needed, 
+    // but simplified: Calculate progress based on max of timeLeft or set duration
+    const progress = Math.max(0, Math.min(100, ((currentTotalTime - timeLeft) / currentTotalTime) * 100));
+
     const radius = 120;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -75,11 +38,11 @@ export const FocusMode: React.FC = () => {
         <div className="flex flex-col items-center justify-center p-6 space-y-8 h-full min-h-[70vh]">
 
             {/* Mode Selectors */}
-            <div className="flex bg-muted p-1 rounded-xl">
+            <div className="flex flex-wrap justify-center gap-2 bg-muted p-1 rounded-xl">
                 {(Object.keys(MODES) as TimerMode[]).map((m) => (
                     <button
                         key={m}
-                        onClick={() => switchMode(m)}
+                        onClick={() => setMode(m)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${mode === m
                             ? 'bg-background shadow-sm text-foreground'
                             : 'text-muted-foreground hover:text-foreground'
@@ -89,6 +52,32 @@ export const FocusMode: React.FC = () => {
                     </button>
                 ))}
             </div>
+
+            {/* Custom Input (Only visible in Custom Mode) */}
+            <AnimatePresence>
+                {mode === 'custom' && !isActive && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="flex items-center gap-2"
+                    >
+                        <Settings2 size={16} className="text-muted-foreground" />
+                        <input
+                            type="number"
+                            min="1"
+                            max="180"
+                            placeholder="Mins"
+                            className="bg-muted text-foreground border border-border rounded-lg px-3 py-1 w-20 text-center focus:outline-none focus:ring-2 focus:ring-primary"
+                            onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                if (!isNaN(val) && val > 0) setCustomDuration(val);
+                            }}
+                        />
+                        <span className="text-sm text-muted-foreground">min</span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Timer Display */}
             <div className="relative flex items-center justify-center scale-90 md:scale-100 transition-transform">
@@ -112,6 +101,7 @@ export const FocusMode: React.FC = () => {
                         fill="transparent"
                         className={`${MODES[mode].color}`}
                         strokeDasharray={circumference}
+                        initial={{ strokeDashoffset: circumference }}
                         animate={{ strokeDashoffset }}
                         transition={{ duration: 1, ease: 'linear' }}
                         strokeLinecap="round"

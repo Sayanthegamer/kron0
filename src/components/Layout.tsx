@@ -74,6 +74,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                 <div className="bg-black/40 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-2xl flex items-center gap-2 pointer-events-auto">
 
                     <NavButton
+                        id="nav-home"
                         active={activeTab === 'dashboard'}
                         onClick={() => onTabChange('dashboard')}
                         icon={<LayoutGrid size={20} />}
@@ -81,6 +82,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                     />
 
                     <NavButton
+                        id="nav-week"
                         active={activeTab === 'week'}
                         onClick={() => onTabChange('week')}
                         icon={<Calendar size={20} />}
@@ -89,6 +91,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
 
                     {/* FAB */}
                     <motion.button
+                        id="nav-add-btn"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={onAddClick}
@@ -98,6 +101,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                     </motion.button>
 
                     <NavButton
+                        id="nav-focus"
                         active={activeTab === 'focus'}
                         onClick={() => onTabChange('focus')}
                         icon={<Timer size={20} />}
@@ -105,6 +109,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                     />
 
                     <NavButton
+                        id="nav-stats"
                         active={activeTab === 'stats'}
                         onClick={() => onTabChange('stats')}
                         icon={<PieChart size={20} />}
@@ -118,14 +123,16 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
 };
 
 interface NavButtonProps {
+    id?: string;
     active: boolean;
     onClick: () => void;
     icon: React.ReactNode;
     label: string;
 }
 
-const NavButton: React.FC<NavButtonProps> = ({ active, onClick, icon }) => (
+const NavButton: React.FC<NavButtonProps> = ({ id, active, onClick, icon }) => (
     <button
+        id={id}
         onClick={onClick}
         className={`relative p-3 rounded-xl transition-all duration-300 group flex items-center justify-center ${active ? 'text-white' : 'text-muted-foreground hover:text-white'
             }`}
