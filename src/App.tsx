@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { TimetableProvider, useTimetable } from './context/TimetableContext';
+import { FocusProvider } from './context/FocusContext';
+import { TodoProvider } from './context/TodoContext';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { WeekView } from './components/WeekView';
@@ -7,16 +9,17 @@ import { EntryModal } from './components/EntryModal';
 import type { TimeTableEntry } from './types';
 import { FocusMode } from './pages/FocusMode';
 import { useNotifications } from './hooks/useNotifications';
+import { StatsWidget } from './components/StatsWidget';
 
 const AppContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'week' | 'settings' | 'focus'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'week' | 'focus' | 'stats'>('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<TimeTableEntry | null>(null);
 
-  const { addEntry, updateEntry, deleteEntry, entries, settings } = useTimetable();
+  const { addEntry, updateEntry, deleteEntry } = useTimetable();
 
   // Enable notifications
-  useNotifications(entries, settings.notificationsEnabled);
+  useNotifications();
 
   const handleSave = (entry: TimeTableEntry | Omit<TimeTableEntry, 'id'>) => {
     if ('id' in entry) {
@@ -45,14 +48,13 @@ const AppContent: React.FC = () => {
       {activeTab === 'dashboard' && <Dashboard onEntryClick={handleEditClick} />}
       {activeTab === 'week' && <WeekView onEntryClick={handleEditClick} />}
       {activeTab === 'focus' && <FocusMode />}
-      {/* Settings tab could be simple for now */}
-      {activeTab === 'settings' && (
-        <div className="p-4 text-center">
-          <h2 className="font-bold text-xl mb-4">Settings</h2>
-          <p>Theme settings are in the top right corner.</p>
-          {/* Future settings here */}
+      {activeTab === 'stats' && (
+        <div className="pt-4 space-y-4">
+          <StatsWidget />
+          {/* We can add history or more details here later */}
         </div>
       )}
+
 
       <EntryModal
         isOpen={isModalOpen}
@@ -68,7 +70,11 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <TimetableProvider>
-      <AppContent />
+      <FocusProvider>
+        <TodoProvider>
+          <AppContent />
+        </TodoProvider>
+      </FocusProvider>
     </TimetableProvider>
   );
 }

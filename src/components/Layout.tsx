@@ -1,12 +1,11 @@
 import React from 'react';
-import { Calendar, Plus, Timer, LayoutGrid, Settings } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
+import { Calendar, Plus, Timer, LayoutGrid, PieChart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LayoutProps {
     children: React.ReactNode;
-    activeTab: 'dashboard' | 'week' | 'settings' | 'focus';
-    onTabChange: (tab: 'dashboard' | 'week' | 'settings' | 'focus') => void;
+    activeTab: 'dashboard' | 'week' | 'focus' | 'stats';
+    onTabChange: (tab: 'dashboard' | 'week' | 'focus' | 'stats') => void;
     onAddClick: () => void;
 }
 
@@ -14,8 +13,24 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden">
             {/* Ambient Background Glows */}
-            <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
-            <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[120px] pointer-events-none" />
+            {/* Ambient Background Glows */}
+            <motion.div
+                animate={{
+                    opacity: activeTab === 'focus' ? 0.8 : 0.4,
+                    scale: activeTab === 'focus' ? 1.2 : 1,
+                }}
+                transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
+                className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none"
+            />
+            <motion.div
+                animate={{
+                    opacity: activeTab === 'focus' ? 0.8 : 0.3,
+                    scale: activeTab === 'focus' ? 1.1 : 1,
+                    background: activeTab === 'focus' ? 'var(--secondary)' : 'var(--secondary)'
+                }}
+                transition={{ duration: 2, delay: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[120px] pointer-events-none"
+            />
 
             {/* Header */}
             <header className="px-6 py-4 flex justify-between items-center sticky top-0 z-10">
@@ -25,7 +40,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                     </div>
                     <h1 className="text-xl font-bold tracking-tight">Timetable</h1>
                 </div>
-                <ThemeToggle />
             </header>
 
             {/* Main Content */}
@@ -79,10 +93,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                     />
 
                     <NavButton
-                        active={activeTab === 'settings'}
-                        onClick={() => onTabChange('settings')}
-                        icon={<Settings size={20} />}
-                        label="Settings"
+                        active={activeTab === 'stats'}
+                        onClick={() => onTabChange('stats')}
+                        icon={<PieChart size={20} />}
+                        label="Stats"
                     />
 
                 </div>

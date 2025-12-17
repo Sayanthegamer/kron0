@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { TimeTableEntry, DayOfWeek } from '../types';
 import { X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -57,7 +58,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
         onClose();
     };
 
-    return (
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
                 <>
@@ -67,7 +68,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
+                        className="fixed inset-0 bg-black/50 z-[200] backdrop-blur-sm"
                     />
 
                     {/* Sheet */}
@@ -76,7 +77,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
                         animate={{ y: 0 }}
                         exit={{ y: "100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="fixed bottom-0 left-0 right-0 bg-card z-50 rounded-t-2xl p-6 shadow-xl max-w-md mx-auto max-h-[90vh] overflow-y-auto"
+                        className="fixed bottom-0 left-0 right-0 bg-card z-[201] rounded-t-2xl p-6 shadow-xl max-w-md mx-auto max-h-[90vh] overflow-y-auto"
                     >
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold">{initialData ? 'Edit Class' : 'Add Class'}</h2>
@@ -109,8 +110,8 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
                                                 type="button"
                                                 onClick={() => toggleDay(day)}
                                                 className={`px-3 py-2 text-xs rounded-full font-medium transition-colors border ${isSelected
-                                                        ? 'bg-primary text-primary-foreground border-primary'
-                                                        : 'bg-muted text-muted-foreground border-transparent hover:border-border'
+                                                    ? 'bg-primary text-primary-foreground border-primary'
+                                                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                                                     }`}
                                             >
                                                 {day.slice(0, 3)}
@@ -187,6 +188,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
                     </motion.div>
                 </>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };

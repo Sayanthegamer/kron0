@@ -67,7 +67,6 @@ export const FocusMode: React.FC = () => {
     // Circular Progress Calculation
     const totalTime = MODES[mode].minutes * 60;
     const progress = ((totalTime - timeLeft) / totalTime) * 100;
-    const circleSize = 280;
     const radius = 120;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -92,12 +91,12 @@ export const FocusMode: React.FC = () => {
             </div>
 
             {/* Timer Display */}
-            <div className="relative flex items-center justify-center">
+            <div className="relative flex items-center justify-center scale-90 md:scale-100 transition-transform">
                 {/* SVG Ring */}
-                <svg width={circleSize} height={circleSize} className="transform -rotate-90">
+                <svg width="260" height="260" viewBox="0 0 280 280" className="transform -rotate-90">
                     <circle
-                        cx={circleSize / 2}
-                        cy={circleSize / 2}
+                        cx="140"
+                        cy="140"
                         r={radius}
                         stroke="currentColor"
                         strokeWidth="12"
@@ -105,8 +104,8 @@ export const FocusMode: React.FC = () => {
                         className="text-muted/20"
                     />
                     <motion.circle
-                        cx={circleSize / 2}
-                        cy={circleSize / 2}
+                        cx="140"
+                        cy="140"
                         r={radius}
                         stroke="currentColor"
                         strokeWidth="12"
@@ -121,12 +120,15 @@ export const FocusMode: React.FC = () => {
 
                 {/* Time Text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-6xl font-bold font-mono tracking-tighter">
+                    <div className="text-5xl md:text-6xl font-bold font-mono tracking-tighter text-foreground">
                         {formatTime(timeLeft)}
                     </div>
-                    <p className="text-muted-foreground mt-2 uppercase tracking-widest text-xs">
-                        {isActive ? 'Running' : 'Paused'}
-                    </p>
+                    <div className="text-muted-foreground mt-2 uppercase tracking-widest text-xs flex flex-col items-center gap-1">
+                        <span>{isActive ? 'Running' : 'Paused'}</span>
+                        <span className="text-[10px] opacity-50 lowercase py-1 px-2 border border-border rounded-full">
+                            {isActive ? 'tap controls below' : 'select duration & press play'}
+                        </span>
+                    </div>
                 </div>
             </div>
 

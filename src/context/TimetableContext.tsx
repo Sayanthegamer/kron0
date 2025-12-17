@@ -23,7 +23,8 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const [settings, setSettings] = useState<AppSettings>(() => {
         const saved = localStorage.getItem(SETTINGS_KEY);
-        return saved ? JSON.parse(saved) : { theme: 'system', notificationsEnabled: true };
+        // Force dark mode regardless of saved state for now
+        return saved ? { ...JSON.parse(saved), theme: 'dark' } : { theme: 'dark', notificationsEnabled: true };
     });
 
     useEffect(() => {
@@ -32,16 +33,9 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     useEffect(() => {
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-        // Apply theme
-        const root = window.document.documentElement;
-        root.classList.remove('light', 'dark');
-
-        if (settings.theme === 'system') {
-            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            root.classList.add(systemTheme);
-        } else {
-            root.classList.add(settings.theme);
-        }
+        // Force Dark Mode always
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
     }, [settings]);
 
     const addEntry = (entry: Omit<TimeTableEntry, 'id'>) => {

@@ -1,47 +1,62 @@
-import { useEffect, useRef } from 'react';
-import type { TimeTableEntry, DayOfWeek } from '../types';
-import { parse, differenceInMinutes } from 'date-fns';
+import { useEffect, useCallback, useRef } from 'react';
+import { useTimetable } from '../context/TimetableContext';
+import { useScheduleStatus } from './useScheduleStatus';
+import { differenceInMinutes, parse } from 'date-fns';
 
-export function useNotifications(entries: TimeTableEntry[], enabled: boolean) {
+export function useNotifications() {
+  const { settings } = useTimetable();
+  const { nextClass, now } = useScheduleStatus();
   const lastNotifiedRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (!enabled) return;
-    if (!('Notification' in window)) return;
-
-    if (Notification.permission === 'default') {
-      Notification.requestPermission();
+  const requestPermission = useCallback(async () => {
+    if (!('Notification' in window)) {
+      console.warn('This browser does not support desktop notification');
+      return false;
     }
 
-    const checkSchedule = () => {
-      if (Notification.permission !== 'granted') return;
+    if (Notification.permission === 'granted') {
+      return true;
+    }
 
-      const now = new Date();
+    if (Notification.permission !== 'denied') {
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    }
 
-      const days: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const currentDayName = days[now.getDay()];
+    return false;
+  }, []);
 
-      const todayEntries = entries.filter(e => e.days.includes(currentDayName));
+  const sendNotification = useCallback((title: string, body: string) => {
+    if (Notification.permission === 'granted' && settings.notificationsEnabled) {
+      new Notification(title, {
+        body,
+        icon: '/pwa-192x192.png', // Standard PWA icon path usually
+        vibrate: [200, 100, 200]
+      } as any);
+    }
+  }, [settings.notificationsEnabled]);
 
-      todayEntries.forEach(entry => {
-        const start = parse(entry.startTime, 'HH:mm', now);
-        const diff = differenceInMinutes(start, now);
+  // Check for upcoming classes
+  useEffect(() => {
+    if (!settings.notificationsEnabled || !nextClass) return;
 
-        if (diff >= 4 && diff <= 5) {
-          const key = `${entry.id}-${now.getDate()}`;
-          if (lastNotifiedRef.current !== key) {
-            new Notification(`Upcoming: ${entry.subject}`, {
-              body: `Starts at ${entry.startTime} in ${entry.location || 'Unknown location'}`,
-              icon: '/logo.svg'
-            });
-            lastNotifiedRef.current = key;
-          }
-        }
-      });
-    };
+    const start = parse(nextClass.startTime, 'HH:mm', now);
+    const diff = differenceInMinutes(start, now);
 
-    const interval = setInterval(checkSchedule, 30000); // Check every 30s
-    return () => clearInterval(interval);
+    // Notify 5 minutes before
+    // We use a key to ensure we only notify once per class instance per day
+    if (diff <= 5 && diff >= 0) {
+      const key = `${nextClass.id}-${now.getDate()}-5min`;
 
-  }, [entries, enabled]);
+      if (lastNotifiedRef.current !== key) {
+        sendNotification(
+          `Upcoming: ${nextClass.subject}`,
+          `Class starts in ${diff} minutes at ${nextClass.location}`
+        );
+        lastNotifiedRef.current = key;
+      }
+    }
+  }, [nextClass, now, settings.notificationsEnabled, sendNotification]);
+
+  return { requestPermission, sendNotification };
 }

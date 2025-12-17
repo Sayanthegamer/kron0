@@ -12,7 +12,7 @@ interface ClassCardProps {
 
 export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) => {
     // Dynamic border color based on status
-    const borderColor = status === 'current' ? 'border-primary' : 'border-white/5';
+    const borderColor = status === 'current' ? 'border-primary' : 'border-border';
     const glow = status === 'current' ? 'shadow-[0_0_30px_-5px_var(--primary)]' : '';
 
     return (
@@ -22,7 +22,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
             onClick={onClick}
             className={twMerge(
                 "relative overflow-hidden rounded-2xl p-5 border backdrop-blur-md transition-all duration-300",
-                "glass-card hover:bg-white/10 cursor-pointer",
+                "glass-card hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer",
                 borderColor,
                 glow
             )}
@@ -35,9 +35,9 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
 
             <div className="flex justify-between items-start pl-3">
                 <div>
-                    <h3 className="text-lg font-bold tracking-tight text-white mb-1.5">{entry.subject}</h3>
+                    <h3 className="text-lg font-bold tracking-tight text-foreground mb-1.5">{entry.subject}</h3>
 
-                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1.5">
                             <Clock size={14} className="text-primary" />
                             <span className={status === 'current' ? 'text-primary font-semibold' : ''}>

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useTimetable } from '../context/TimetableContext';
 import type { TimeTableEntry, DayOfWeek } from '../types';
 import { isWithinInterval, parse, getDay } from 'date-fns';
 
-export function useScheduleStatus(entries: TimeTableEntry[]) {
+export function useScheduleStatus() {
+    const { entries } = useTimetable();
     const [currentClass, setCurrentClass] = useState<TimeTableEntry | null>(null);
     const [nextClass, setNextClass] = useState<TimeTableEntry | null>(null);
     const [now, setNow] = useState(new Date());
