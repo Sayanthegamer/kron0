@@ -16,20 +16,20 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
             {/* Ambient Background Glows */}
             <motion.div
                 animate={{
-                    opacity: activeTab === 'focus' ? 0.8 : 0.4,
-                    scale: activeTab === 'focus' ? 1.2 : 1,
+                    opacity: activeTab === 'focus' ? 0.6 : 0.3,
+                    scale: activeTab === 'focus' ? 1.1 : 1,
                 }}
-                transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-                className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none"
+                transition={{ duration: 4, repeat: Infinity, repeatType: "mirror" }}
+                className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none will-change-transform"
             />
             <motion.div
                 animate={{
-                    opacity: activeTab === 'focus' ? 0.8 : 0.3,
-                    scale: activeTab === 'focus' ? 1.1 : 1,
+                    opacity: activeTab === 'focus' ? 0.6 : 0.2,
+                    scale: activeTab === 'focus' ? 1.05 : 1,
                     background: activeTab === 'focus' ? 'var(--secondary)' : 'var(--secondary)'
                 }}
-                transition={{ duration: 2, delay: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[120px] pointer-events-none"
+                transition={{ duration: 5, delay: 1, repeat: Infinity, repeatType: "mirror" }}
+                className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-secondary/10 rounded-full blur-[80px] md:blur-[120px] pointer-events-none will-change-transform"
             />
 
             {/* Header */}

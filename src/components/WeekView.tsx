@@ -26,19 +26,31 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick }) => {
         }
     }, []);
 
-    const checkScroll = () => {
+    const checkScroll = React.useCallback(() => {
         if (scrollRef.current) {
             const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
             setCanScrollLeft(scrollLeft > 0);
-            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
         }
-    };
+    }, []);
 
     React.useEffect(() => {
         checkScroll();
-        window.addEventListener('resize', checkScroll);
-        return () => window.removeEventListener('resize', checkScroll);
-    }, []);
+        // Throttled resize listener could be added here if needed, but standard resize is okay for now if checkScroll is light.
+        // The main issue is scroll event.
+        const ref = scrollRef.current;
+        if (ref) {
+            ref.addEventListener('scroll', checkScroll, { passive: true });
+        }
+        window.addEventListener('resize', checkScroll, { passive: true });
+
+        return () => {
+            if (ref) {
+                ref.removeEventListener('scroll', checkScroll);
+            }
+            window.removeEventListener('resize', checkScroll);
+        };
+    }, [checkScroll]);
 
     const dayEntries = entries
         .filter(e => e.days.includes(selectedDay))
@@ -50,7 +62,6 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick }) => {
             <div className="relative group">
                 <div
                     ref={scrollRef}
-                    onScroll={checkScroll}
                     className="flex overflow-x-auto pb-4 gap-3 no-scrollbar snap-x px-1"
                 >
                     {DAYS.map((day) => (
