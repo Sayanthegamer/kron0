@@ -121,6 +121,28 @@ export const OnboardingTour: React.FC = () => {
 
     const step = TOUR_STEPS[currentStep];
 
+    // Smart Positioning: Auto-flip based on available space
+    const effectivePosition = (() => {
+        if (step.targetId === 'welcome-step') return 'bottom';
+
+        let pos = step.position || 'bottom';
+        const SPACE_THRESHOLD = 300; // Estimated card height + padding
+
+        const topSpace = targetRect.top;
+        const bottomSpace = window.innerHeight - targetRect.bottom;
+
+        // If configured for top but no space, flip to bottom
+        if (pos === 'top' && topSpace < SPACE_THRESHOLD) {
+            return 'bottom';
+        }
+        // If configured for bottom but no space, flip to top
+        if (pos === 'bottom' && bottomSpace < SPACE_THRESHOLD) {
+            return 'top';
+        }
+
+        return pos;
+    })();
+
     return createPortal(
         <div className="fixed inset-0 z-[100] touch-none">
             {/* SVG Mask for "Spotlight" effect */}
@@ -157,20 +179,20 @@ export const OnboardingTour: React.FC = () => {
                         opacity: 0,
                         scale: 0.9,
                         x: '-50%',
-                        y: step.targetId === 'welcome-step' ? '-40%' : (step.position === 'top' ? '-90%' : 10)
+                        y: step.targetId === 'welcome-step' ? '-40%' : (effectivePosition === 'top' ? '-90%' : 10)
                     }}
                     animate={{
                         opacity: 1,
                         scale: 1,
                         x: '-50%',
-                        y: step.targetId === 'welcome-step' ? '-50%' : (step.position === 'top' ? '-100%' : 0)
+                        y: step.targetId === 'welcome-step' ? '-50%' : (effectivePosition === 'top' ? '-100%' : 0)
                     }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     style={{
                         position: 'absolute',
                         top: step.targetId === 'welcome-step'
                             ? '50%'
-                            : step.position === 'top'
+                            : effectivePosition === 'top'
                                 ? targetRect.top - 24
                                 : targetRect.bottom + 24,
                         left: (() => {
