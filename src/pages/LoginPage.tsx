@@ -4,17 +4,13 @@ import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
-    const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
+    const { signInWithGoogle, signInWithEmail, signUpWithEmail, isSigningIn } = useAuth();
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleEmailSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-        setIsLoading(true);
 
         try {
             if (isSignUp) {
@@ -23,21 +19,19 @@ export const LoginPage: React.FC = () => {
                 await signInWithEmail(email, password);
             }
         } catch (err: any) {
-            setError(err.message?.replace('Firebase: ', '') || 'An error occurred');
-        } finally {
-            setIsLoading(false);
+            // AuthContext already showed error toast via showError()
+            // Just log if needed for debugging
+            console.error('Auth error:', err);
         }
     };
 
     const handleGoogleSignIn = async () => {
-        setError('');
-        setIsLoading(true);
         try {
             await signInWithGoogle();
+            // AuthContext shows success toast
         } catch (err: any) {
-            setError(err.message?.replace('Firebase: ', '') || 'An error occurred');
-        } finally {
-            setIsLoading(false);
+            // AuthContext already showed error toast
+            console.error('Google sign in error:', err);
         }
     };
 
@@ -62,7 +56,7 @@ export const LoginPage: React.FC = () => {
                 {/* Google Sign In */}
                 <button
                     onClick={handleGoogleSignIn}
-                    disabled={isLoading}
+                    disabled={isSigningIn}
                     className="w-full p-4 rounded-xl bg-white text-gray-800 font-medium flex items-center justify-center gap-3 hover:bg-gray-100 transition-colors mb-4 disabled:opacity-50"
                 >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -107,16 +101,12 @@ export const LoginPage: React.FC = () => {
                         />
                     </div>
 
-                    {error && (
-                        <p className="text-red-400 text-sm text-center">{error}</p>
-                    )}
-
                     <button
                         type="submit"
-                        disabled={isLoading}
+                        disabled={isSigningIn}
                         className="w-full p-4 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50"
                     >
-                        {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+                        {isSigningIn ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
                         {isSignUp ? 'Create Account' : 'Sign In'}
                     </button>
                 </form>
@@ -125,7 +115,7 @@ export const LoginPage: React.FC = () => {
                 <p className="text-center text-muted-foreground text-sm mt-6">
                     {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
                     <button
-                        onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
+                        onClick={() => setIsSignUp(!isSignUp)}
                         className="text-primary hover:underline font-medium"
                     >
                         {isSignUp ? 'Sign In' : 'Sign Up'}
