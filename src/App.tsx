@@ -10,7 +10,7 @@ import { ToastProvider } from './context/ToastContext';
 import { EntryModal } from './components/EntryModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
-import { OnboardingTour } from './components/OnboardingTour';
+// ✅ REMOVED: import { OnboardingTour } from './components/OnboardingTour';
 import { StatsWidget } from './components/StatsWidget';
 import { WeekView } from './components/WeekView';
 import { Dashboard } from './pages/Dashboard';
@@ -39,6 +39,16 @@ const LoginPage = React.lazy(() =>
     .then((module) => ({ default: module.LoginPage }))
     .catch((error) => {
       logError(error, 'Lazy import: LoginPage');
+      throw error;
+    })
+);
+
+// ✅ Lazy load OnboardingTour - only loads for authenticated users
+const OnboardingTour = React.lazy(() =>
+  import('./components/OnboardingTour')
+    .then((module) => ({ default: module.OnboardingTour }))
+    .catch((error) => {
+      logError(error, 'Lazy import: OnboardingTour');
       throw error;
     })
 );
@@ -108,7 +118,9 @@ const AuthenticatedApp: React.FC = () => {
         <FocusProvider>
           <TodoProvider>
             <AppContent />
-            <OnboardingTour />
+            <Suspense fallback={null}>  {/* ✅ Suspense wrapper */}
+              <OnboardingTour />
+            </Suspense>
           </TodoProvider>
         </FocusProvider>
       </TimetableProvider>

@@ -56,22 +56,24 @@ interface ErrorFallbackProps {
 }
 
 const ErrorFallbackContent: React.FC<ErrorFallbackProps> = ({ error, retry }) => {
-  let showError: (title: string, message?: string) => void = () => {};
+  const [showError, setShowError] = React.useState<((title: string, message?: string) => void) | null>(null);
 
-  try {
-    // Try to use toast, but have fallback if it fails
-    const toast = useToast();
-    showError = toast.showError;
-  } catch (e) {
-    // If toast isn't available, use console fallback
-    console.error('Toast system unavailable in error boundary:', e);
-    showError = (title: string, message?: string) => {
-      console.error(`${title}: ${message}`);
-    };
-  }
+  // ✅ Safely try to get toast, with fallback
+  React.useEffect(() => {
+    try {
+      const toast = useToast();
+      setShowError(() => toast.showError);
+    } catch (e) {
+      // ✅ If toast fails, use console fallback
+      console.error('Toast system unavailable in error boundary:', e);
+      setShowError(() => (title: string, message?: string) => {
+        console.error(`${title}: ${message}`);
+      });
+    }
+  }, []);
 
   React.useEffect(() => {
-    if (error) {
+    if (error && showError) {
       showError('Something went wrong', 'An unexpected error occurred. Please try again.');
     }
   }, [error, showError]);

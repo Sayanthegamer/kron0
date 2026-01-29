@@ -33,15 +33,27 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Load todos from Firestore scoped to current user
     useEffect(() => {
-        if (!user) return;
+        if (!user) {
+            setIsLoading(false);
+            return;
+        }
+
+        let isMounted = true;  // ✅ Prevent state updates after unmount
 
         const loadTodos = async () => {
             try {
+                setIsLoading(true);  // ✅ Explicitly set loading true
+                setLastError(null);
+
                 const q = query(
                     collection(db, TODOS_COLLECTION),
                     where('userId', '==', user.uid)
                 );
                 const snapshot = await getDocs(q);
+
+                // ✅ Only update state if component still mounted
+                if (!isMounted) return;
+
                 const data = snapshot.docs.map(doc => ({
                     ...doc.data(),
                     id: doc.id
@@ -50,16 +62,28 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setTodos(data);
                 setLastError(null);
             } catch (error) {
+                // ✅ Only update state if component still mounted
+                if (!isMounted) return;
+
                 const errorMessage = getErrorMessage(error);
                 logError(error, 'Load Todos');
                 setLastError(errorMessage);
                 showError('Failed to load todos', errorMessage);
             } finally {
-                setIsLoading(false);
+                // ✅ Only update state if component still mounted
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         };
+
         loadTodos();
-    }, [user]);
+
+        // ✅ Cleanup to prevent memory leaks and race conditions
+        return () => {
+            isMounted = false;
+        };
+    }, [user, showError]);  // ✅ Added showError to dependency array
 
     const clearError = () => setLastError(null);
 
