@@ -8,7 +8,13 @@ import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '.
 
 export type TimerMode = 'focus' | 'short' | 'long' | 'custom';
 
-export const MODES: Record<TimerMode, { label: string; minutes: number; color: string }> = {
+export interface ModeConfig {
+    label: string;
+    minutes: number;
+    color: string;
+}
+
+export const MODES: Record<TimerMode, ModeConfig> = {
     focus: { label: 'Focus', minutes: 25, color: 'text-primary' },
     short: { label: 'Short Break', minutes: 5, color: 'text-teal-500' },
     long: { label: 'Long Break', minutes: 15, color: 'text-indigo-500' },
