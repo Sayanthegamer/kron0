@@ -27,12 +27,24 @@ export function useNotifications() {
   }, []);
 
   const sendNotification = useCallback((title: string, body: string) => {
-    if (Notification.permission === 'granted' && settings.notificationsEnabled) {
-      new Notification(title, {
-        body,
-        icon: '/pwa-192x192.png', // Standard PWA icon path usually
-        vibrate: [200, 100, 200]
-      } as any);
+    // ✅ Check BOTH Notification exists AND permission granted
+    if (
+      typeof window !== 'undefined' &&
+      'Notification' in window &&
+      Notification.permission === 'granted' &&
+      settings.notificationsEnabled
+    ) {
+      try {
+        // ✅ Wrap in try-catch for safety
+        new Notification(title, {
+          body,
+          icon: '/pwa-192x192.png',
+          vibrate: [200, 100, 200]
+        } as any);
+      } catch (error) {
+        // ✅ Log but don't crash if notification fails
+        console.warn('Failed to send notification:', error);
+      }
     }
   }, [settings.notificationsEnabled]);
 

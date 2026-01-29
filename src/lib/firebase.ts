@@ -22,13 +22,18 @@ export const missingFirebaseEnvVars = Object.entries({
     .filter(([, value]) => !value)
     .map(([key]) => key);
 
+// ✅ THROW ERROR IMMEDIATELY if env vars are missing
 if (missingFirebaseEnvVars.length > 0) {
-    console.error(
-        `[Firebase] Missing required environment variables: ${missingFirebaseEnvVars.join(', ')}. ` +
-            `Copy .env.example to .env and fill in your Firebase project values.`
-    );
+    const errorMessage = `[Firebase] Missing required environment variables: ${missingFirebaseEnvVars.join(', ')}. ` +
+        `Make sure these are set in your Vercel environment variables or .env file.`;
+
+    console.error(errorMessage);
+
+    // ✅ Prevent app initialization by throwing
+    throw new Error(errorMessage);
 }
 
+// ✅ Only initialize if all vars are present
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
