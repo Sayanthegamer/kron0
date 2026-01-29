@@ -31,14 +31,10 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [lastError, setLastError] = useState<string | null>(null);
     const [lastFailedOperation, setLastFailedOperation] = useState<(() => Promise<void>) | null>(null);
 
-    // ✅ Track loading state to prevent race conditions
-    const [isInitialized, setIsInitialized] = useState(false);
-
     // Load todos from Firestore scoped to current user
     useEffect(() => {
         if (!user) {
             setIsLoading(false);
-            setIsInitialized(false);
             return;
         }
 
@@ -65,7 +61,6 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 data.sort((a, b) => b.createdAt - a.createdAt);
                 setTodos(data);
                 setLastError(null);
-                setIsInitialized(true);
             } catch (error) {
                 // ✅ Only update state if component still mounted
                 if (!isMounted) return;
@@ -74,7 +69,6 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 logError(error, 'Load Todos');
                 setLastError(errorMessage);
                 showError('Failed to load todos', errorMessage);
-                setIsInitialized(true);
             } finally {
                 // ✅ Only update state if component still mounted
                 if (isMounted) {

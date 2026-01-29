@@ -34,9 +34,6 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const [lastError, setLastError] = useState<string | null>(null);
     const [lastFailedOperation, setLastFailedOperation] = useState<(() => Promise<void>) | null>(null);
 
-    // ✅ Track loading state to prevent race conditions
-    const [isInitialized, setIsInitialized] = useState(false);
-
     const [settings, setSettings] = useState<AppSettings>(() => {
         const saved = localStorage.getItem(SETTINGS_KEY);
         return saved ? { ...JSON.parse(saved), theme: 'dark' } : { theme: 'dark', notificationsEnabled: true };
@@ -46,7 +43,6 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     useEffect(() => {
         if (!user) {
             setIsLoading(false);
-            setIsInitialized(false);
             return;
         }
 
@@ -73,7 +69,6 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
                 setEntries(data);
                 setLastError(null);
-                setIsInitialized(true);
             } catch (error) {
                 // ✅ Only update state if component still mounted
                 if (!isMounted) return;
@@ -82,7 +77,6 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 logError(error, 'Load Entries');
                 setLastError(errorMessage);
                 showError('Failed to load schedule', errorMessage);
-                setIsInitialized(true);
             } finally {
                 // ✅ Only update state if component still mounted
                 if (isMounted) {
