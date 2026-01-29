@@ -33,12 +33,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isSigningIn, setIsSigningIn] = useState(false);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
+        const timeoutId = window.setTimeout(() => {
+            logError(new Error('Auth initialization timed out'), 'Auth State');
             setIsLoading(false);
-        });
-        return unsubscribe;
-    }, []);
+        }, 10000);
+
+        const unsubscribe = onAuthStateChanged(
+            auth,
+            (user) => {
+                window.clearTimeout(timeoutId);
+                setUser(user);
+                setIsLoading(false);
+            },
+            (error) => {
+                window.clearTimeout(timeoutId);
+
+                const errorMessage = getErrorMessage(error);
+                logError(error, 'Auth State');
+                setLastError(errorMessage);
+                showError('Authentication error', errorMessage);
+
+                setUser(null);
+                setIsLoading(false);
+            }
+        );
+
+        return () => {
+            window.clearTimeout(timeoutId);
+            unsubscribe();
+        };
+    }, [showError]);
 
     const clearError = () => setLastError(null);
 

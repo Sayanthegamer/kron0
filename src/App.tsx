@@ -1,19 +1,47 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { TimetableProvider, useTimetable } from './context/TimetableContext';
 import { FocusProvider } from './context/FocusContext';
+import { TimetableProvider, useTimetable } from './context/TimetableContext';
 import { TodoProvider } from './context/TodoContext';
 import { ToastProvider } from './context/ToastContext';
-import { Layout } from './components/Layout';
-import { Dashboard } from './pages/Dashboard';
-import { WeekView } from './components/WeekView';
+
 import { EntryModal } from './components/EntryModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import type { TimeTableEntry } from './types';
+import { Layout } from './components/Layout';
+import { OnboardingTour } from './components/OnboardingTour';
+import { StatsWidget } from './components/StatsWidget';
+import { WeekView } from './components/WeekView';
+import { Dashboard } from './pages/Dashboard';
 import { FocusMode } from './pages/FocusMode';
 import { useNotifications } from './hooks/useNotifications';
-import { StatsWidget } from './components/StatsWidget';
-import { Loader2 } from 'lucide-react';
+import { logError } from './lib/errors';
+import type { TimeTableEntry } from './types';
+
+const fullscreenSpinner = (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+  </div>
+);
+
+const LandingPage = React.lazy(() =>
+  import('./pages/LandingPage')
+    .then((module) => ({ default: module.LandingPage }))
+    .catch((error) => {
+      logError(error, 'Lazy import: LandingPage');
+      throw error;
+    })
+);
+
+const LoginPage = React.lazy(() =>
+  import('./pages/LoginPage')
+    .then((module) => ({ default: module.LoginPage }))
+    .catch((error) => {
+      logError(error, 'Lazy import: LoginPage');
+      throw error;
+    })
+);
 
 const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'week' | 'focus' | 'stats'>('dashboard');
@@ -22,7 +50,6 @@ const AppContent: React.FC = () => {
 
   const { addEntry, updateEntry, deleteEntry } = useTimetable();
 
-  // Enable notifications
   useNotifications();
 
   const handleSave = (entry: TimeTableEntry | Omit<TimeTableEntry, 'id'>) => {
@@ -44,12 +71,10 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <Layout
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      onAddClick={handleAddClick}
-    >
-      {activeTab === 'dashboard' && <Dashboard onEntryClick={handleEditClick} onAddEntry={handleAddClick} />}
+    <Layout activeTab={activeTab} onTabChange={setActiveTab} onAddClick={handleAddClick}>
+      {activeTab === 'dashboard' && (
+        <Dashboard onEntryClick={handleEditClick} onAddEntry={handleAddClick} />
+      )}
       {activeTab === 'week' && <WeekView onEntryClick={handleEditClick} />}
       {activeTab === 'focus' && <FocusMode />}
       {activeTab === 'stats' && (
@@ -69,23 +94,12 @@ const AppContent: React.FC = () => {
   );
 };
 
-import { OnboardingTour } from './components/OnboardingTour';
-
-const LandingPage = React.lazy(() => import('./pages/LandingPage').then(module => ({ default: module.LandingPage })));
-const LoginPage = React.lazy(() => import('./pages/LoginPage').then(module => ({ default: module.LoginPage })));
-import { Suspense } from 'react';
-
-// Main App with Auth Check
 const AuthenticatedApp: React.FC = () => {
   const { user, isLoading } = useAuth();
   const [showLanding, setShowLanding] = useState(true);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
-    );
+    return fullscreenSpinner;
   }
 
   if (user) {
@@ -101,13 +115,8 @@ const AuthenticatedApp: React.FC = () => {
     );
   }
 
-  // Not logged in flow
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
-    }>
+    <Suspense fallback={fullscreenSpinner}>
       {showLanding ? (
         <LandingPage onGetStarted={() => setShowLanding(false)} />
       ) : (
@@ -119,13 +128,13 @@ const AuthenticatedApp: React.FC = () => {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <ToastProvider>
+    <ToastProvider>
+      <ErrorBoundary>
+        <AuthProvider>
           <AuthenticatedApp />
-        </ToastProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+        </AuthProvider>
+      </ErrorBoundary>
+    </ToastProvider>
   );
 }
 

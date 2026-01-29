@@ -26,6 +26,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     logError(error, 'ErrorBoundary');
+    console.error('Component stack:', errorInfo.componentStack);
+
     this.setState({
       error,
       errorInfo
@@ -77,6 +79,18 @@ const ErrorFallbackContent: React.FC<ErrorFallbackProps> = ({ error, retry }) =>
           <p className="text-muted-foreground mb-6">
             We're sorry for the inconvenience. The app encountered an unexpected error.
           </p>
+
+          {import.meta.env.DEV && error && (
+            <details className="mb-6 text-left">
+              <summary className="text-sm text-muted-foreground cursor-pointer select-none">
+                Error details (dev)
+              </summary>
+              <pre className="mt-3 p-3 rounded-lg bg-muted text-xs text-foreground whitespace-pre-wrap overflow-auto max-h-48">
+                {error.stack || error.message}
+              </pre>
+            </details>
+          )}
+
           <div className="flex gap-3 justify-center">
             {retry && (
               <motion.button
