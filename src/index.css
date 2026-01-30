@@ -172,6 +172,166 @@
   .transition-snappy {
     transition: all 0.2s var(--ease-spring);
   }
+
+  /* Timer Animations */
+  @keyframes breathe {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.02);
+      opacity: 0.8;
+    }
+  }
+
+  .breathing-animation {
+    animation: breathe 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 20px currentColor;
+      filter: drop-shadow(0 0 10px currentColor);
+    }
+    50% {
+      box-shadow: 0 0 40px currentColor;
+      filter: drop-shadow(0 0 20px currentColor);
+    }
+  }
+
+  .timer-glow-focus {
+    animation: glow-pulse 2s ease-in-out infinite;
+    color: hsl(var(--primary));
+  }
+
+  .timer-glow-break {
+    animation: glow-pulse 2s ease-in-out infinite;
+    color: #14b8a6;
+  }
+
+  @keyframes drift {
+    0% {
+      transform: translateY(0px) translateX(0px);
+    }
+    25% {
+      transform: translateY(-10px) translateX(5px);
+    }
+    50% {
+      transform: translateY(-5px) translateX(-5px);
+    }
+    75% {
+      transform: translateY(-15px) translateX(3px);
+    }
+    100% {
+      transform: translateY(0px) translateX(0px);
+    }
+  }
+
+  .floating-animation {
+    animation: drift 4s ease-in-out infinite;
+  }
+
+  @keyframes bounce-float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  .floating-button {
+    animation: bounce-float 2s ease-in-out infinite;
+  }
+
+  @keyframes number-flip {
+    0% {
+      transform: rotateX(0deg);
+    }
+    50% {
+      transform: rotateX(90deg);
+    }
+    100% {
+      transform: rotateX(0deg);
+    }
+  }
+
+  .number-flip {
+    animation: number-flip 0.3s ease-in-out;
+    transform-style: preserve-3d;
+  }
+
+  /* Particle system container */
+  .particle-system {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Mode-specific glows */
+  .glow-focus {
+    box-shadow: 0 0 30px rgba(139, 47, 201, 0.4),
+                0 0 60px rgba(139, 47, 201, 0.2),
+                0 0 90px rgba(139, 47, 201, 0.1);
+  }
+
+  .glow-break {
+    box-shadow: 0 0 30px rgba(20, 184, 166, 0.4),
+                0 0 60px rgba(20, 184, 166, 0.2),
+                0 0 90px rgba(20, 184, 166, 0.1);
+  }
+
+  .glow-long-break {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.4),
+                0 0 60px rgba(99, 102, 241, 0.2),
+                0 0 90px rgba(99, 102, 241, 0.1);
+  }
+
+  .glow-custom {
+    box-shadow: 0 0 30px rgba(236, 72, 153, 0.4),
+                0 0 60px rgba(236, 72, 153, 0.2),
+                0 0 90px rgba(236, 72, 153, 0.1);
+  }
+
+  /* Timer text enhancements */
+  .timer-text-glow {
+    text-shadow: 0 0 30px currentColor,
+                 0 0 60px currentColor;
+  }
+
+  /* Confetti animations */
+  @keyframes confetti-fall {
+    0% {
+      transform: translateY(-100vh) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
+  .confetti {
+    animation: confetti-fall 3s ease-in-out forwards;
+  }
+
+  /* Ripple effect */
+  @keyframes ripple {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  .ripple {
+    animation: ripple 0.6s ease-out;
+  }
 }
 
 /* Custom Scrollbar Global */
