@@ -650,6 +650,148 @@
   .ripple {
     animation: ripple 0.6s ease-out;
   }
+
+  /* Card lift effect for dashboard */
+  @keyframes card-lift {
+    0% {
+      transform: translateY(0) scale(1);
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+    100% {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+  }
+
+  /* Live badge pulse animation */
+  @keyframes live-badge-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(139, 47, 201, 0.4);
+      opacity: 1;
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(139, 47, 201, 0);
+      opacity: 0.8;
+    }
+  }
+
+  .live-badge-pulse {
+    animation: live-badge-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Floating button continuous animation */
+  @keyframes fab-bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  .fab-bounce {
+    animation: fab-bounce 2s ease-in-out infinite;
+  }
+
+  /* Number counter flip animation */
+  @keyframes number-counter {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    51% {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .number-counter {
+    animation: number-counter 0.4s ease-out;
+  }
+
+  /* Smooth separator animation */
+  @keyframes smooth-separator {
+    0% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+
+  .smooth-separator {
+    animation: smooth-separator 0.5s ease-out;
+  }
+
+  /* Class card gradient backgrounds */
+  .class-card-gradient-primary {
+    background: linear-gradient(135deg, rgba(139, 47, 201, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+  }
+
+  .class-card-gradient-secondary {
+    background: linear-gradient(135deg, rgba(0, 217, 249, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  }
+
+  /* Stagger animation utility */
+  .stagger-item {
+    animation: fade-in-up 0.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  /* Enhanced hover effects for cards */
+  .smooth-hover {
+    transition: all var(--transition-normal) var(--timing-ease-out);
+  }
+
+  .smooth-hover:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+
+  /* Live indicator styling */
+  .live-indicator {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .live-indicator::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Gradient text shimmer */
+  @keyframes gradient-shimmer {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .gradient-shimmer {
+    background-size: 200% 200%;
+    animation: gradient-shimmer 3s ease infinite;
+  }
 }
 
 /* Custom Scrollbar Global */

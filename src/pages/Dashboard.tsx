@@ -3,10 +3,16 @@ import React, { useState } from 'react';
 import { useScheduleStatus } from '../hooks/useScheduleStatus';
 import { ClassCard } from '../components/ClassCard';
 import { TodoWidget } from '../components/TodoWidget';
+import { LiveBadge } from '../components/LiveBadge';
+import { QuickAddButton } from '../components/QuickAddButton';
+import { SectionDivider } from '../components/SectionDivider';
+import { StaggeredList } from '../components/StaggeredList';
+import { ClassCardSkeleton } from '../components/SkeletonLoader';
+import { EmptyStateEnhanced } from '../components/EmptyStateEnhanced';
 import type { TimeTableEntry, DayOfWeek } from '../types';
 import { format, isWithinInterval, parse, getDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Sparkles, Plus, ChevronDown, Zap } from 'lucide-react';
+import { Clock, Sparkles, ChevronDown, Zap, Calendar } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 import { useTimetable } from '../context/TimetableContext';
@@ -18,7 +24,7 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }) => {
     const { user } = useAuth();
-    const { entries } = useTimetable();
+    const { entries, isLoading } = useTimetable();
     const { currentClass, nextClass, now } = useScheduleStatus();
     const [showPastClasses, setShowPastClasses] = useState(false);
     const [isHeaderLoaded, setIsHeaderLoaded] = useState(false);
@@ -157,25 +163,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }
                                 transition={{ delay: 0.2 }}
                             >
                                 <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                                    <Zap className="text-primary w-5 h-5" />
+                                    <motion.div
+                                        animate={{ 
+                                            rotate: [0, 10, -10, 0],
+                                            scale: [1, 1.1, 1]
+                                        }}
+                                        transition={{ 
+                                            duration: 2,
+                                            repeat: Infinity,
+                                            ease: "easeInOut"
+                                        }}
+                                    >
+                                        <Zap className="text-primary w-5 h-5" />
+                                    </motion.div>
                                     Happening Now
                                 </h3>
-                                <motion.span 
-                                    className="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold uppercase tracking-wider animate-pulse-glow border border-primary/30"
-                                    animate={{ 
-                                        boxShadow: [
-                                            '0 0 0 0 rgba(139, 47, 201, 0.4)',
-                                            '0 0 0 10px rgba(139, 47, 201, 0)',
-                                        ]
-                                    }}
-                                    transition={{ 
-                                        duration: 2,
-                                        repeat: Infinity,
-                                        ease: "easeOut"
-                                    }}
-                                >
-                                    Live
-                                </motion.span>
+                                <LiveBadge variant="live" />
                             </motion.div>
                             <motion.div
                                 initial={{ scale: 0.95, opacity: 0 }}
@@ -210,18 +213,32 @@ export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.2 }}
                             >
-                                <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                                    <Clock className="text-secondary w-5 h-5" />
-                                    Up Next
-                                </h3>
-                                <motion.span 
-                                    className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20"
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: 0.3 }}
-                                >
-                                    in {format(parse(nextClass.startTime, 'HH:mm', now), 'h:mm a')}
-                                </motion.span>
+                                <div className="flex items-center gap-3">
+                                    <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
+                                        <motion.div
+                                            animate={{ 
+                                                rotate: [0, 360],
+                                            }}
+                                            transition={{ 
+                                                duration: 8,
+                                                repeat: Infinity,
+                                                ease: "linear"
+                                            }}
+                                        >
+                                            <Clock className="text-secondary w-5 h-5" />
+                                        </motion.div>
+                                        Up Next
+                                    </h3>
+                                    <motion.span 
+                                        className="text-xs text-muted-foreground px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20"
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 0.3 }}
+                                    >
+                                        in {format(parse(nextClass.startTime, 'HH:mm', now), 'h:mm a')}
+                                    </motion.span>
+                                </div>
+                                <LiveBadge variant="next" />
                             </motion.div>
                             <motion.div
                                 initial={{ scale: 0.95, opacity: 0 }}
@@ -285,144 +302,146 @@ export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }
             </section>
 
             {/* Enhanced TODAY'S SCHEDULE */}
-            {todayEntries.length > 0 && (
+            {(todayEntries.length > 0 || isLoading) && (
                 <section>
                     <motion.div 
-                        className="flex items-center justify-between mb-4"
+                        className="flex items-center justify-between mb-6"
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                     >
-                        <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                            Today's Schedule
-                            <motion.span 
-                                className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full border border-primary/30"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: 0.4, type: "spring" }}
-                            >
-                                {todayEntries.length} {todayEntries.length === 1 ? 'class' : 'classes'}
-                            </motion.span>
-                        </h3>
-                        <motion.button
-                            onClick={onAddEntry}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-smooth focus-ring group hover-lift"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 }}
-                        >
+                        <div className="flex items-center gap-3">
                             <motion.div
-                                whileHover={{ rotate: 90 }}
-                                transition={{ type: "spring", stiffness: 300 }}
+                                animate={{ 
+                                    rotate: [0, 5, -5, 0],
+                                }}
+                                transition={{ 
+                                    duration: 3,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                }}
                             >
-                                <Plus size={16} />
+                                <Calendar className="text-primary w-5 h-5" />
                             </motion.div>
-                            <span>Add Class</span>
-                        </motion.button>
+                            <h3 className="text-xl font-semibold text-foreground">
+                                Today's Schedule
+                            </h3>
+                            {!isLoading && (
+                                <motion.div
+                                    className="flex items-center gap-2 text-xs bg-primary/20 text-primary px-3 py-1.5 rounded-full border border-primary/30"
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ delay: 0.4, type: "spring", stiffness: 300 }}
+                                >
+                                    <motion.span 
+                                        className="text-lg font-bold"
+                                        key={todayEntries.length}
+                                        initial={{ y: -20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ type: "spring", stiffness: 500 }}
+                                    >
+                                        {todayEntries.length}
+                                    </motion.span>
+                                    <span className="uppercase tracking-wider font-semibold">
+                                        {todayEntries.length === 1 ? 'class' : 'classes'}
+                                    </span>
+                                </motion.div>
+                            )}
+                        </div>
+                        <QuickAddButton onClick={onAddEntry} expanded />
                     </motion.div>
 
-                    <div className="space-y-3">
-                        {/* Upcoming Classes */}
-                        {upcomingClasses.map((entry, index) => (
-                            <motion.div
-                                key={entry.id}
-                                initial={{ opacity: 0, x: -30, scale: 0.95 }}
-                                animate={{ opacity: 1, x: 0, scale: 1 }}
-                                transition={{ 
-                                    delay: index * 0.08, 
-                                    duration: 0.4,
-                                    ease: "easeOut",
-                                    type: "spring",
-                                    stiffness: 100
-                                }}
-                                className="stagger-animation"
-                            >
+                    {/* Loading State */}
+                    {isLoading ? (
+                        <div className="space-y-3">
+                            {[...Array(3)].map((_, i) => (
                                 <motion.div
-                                    whileHover={{ x: 4 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
+                                    key={i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.1 }}
                                 >
-                                    <ClassCard
-                                        entry={entry}
-                                        status={entry === currentClass ? 'current' : entry === nextClass ? 'next' : 'future'}
-                                        onClick={() => onEntryClick(entry)}
-                                    />
+                                    <ClassCardSkeleton />
                                 </motion.div>
-                            </motion.div>
-                        ))}
-
-                        {/* Past Classes Section */}
-                        {pastClasses.length > 0 && (
-                            <>
-                                <motion.div 
-                                    className="py-2 flex items-center gap-3"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: upcomingClasses.length * 0.08 + 0.2 }}
-                                >
-                                    <motion.div 
-                                        className="flex-1 h-px bg-border"
-                                        initial={{ scaleX: 0 }}
-                                        animate={{ scaleX: 1 }}
-                                        transition={{ duration: 0.5, delay: upcomingClasses.length * 0.08 + 0.3 }}
-                                    />
-                                    <motion.button
-                                        onClick={() => setShowPastClasses(!showPastClasses)}
-                                        className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors group"
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {/* Upcoming Classes with staggered animation */}
+                            <StaggeredList staggerDelay={0.08} direction="left">
+                                {upcomingClasses.map((entry, index) => (
+                                    <motion.div
+                                        key={entry.id}
+                                        whileHover={{ x: 4 }}
+                                        transition={{ type: "spring", stiffness: 300 }}
                                     >
-                                        <span className="uppercase tracking-wider">Past</span>
-                                        <motion.div
-                                            animate={{ rotate: showPastClasses ? 180 : 0 }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            <ChevronDown size={14} />
-                                        </motion.div>
-                                    </motion.button>
-                                    <motion.div 
-                                        className="flex-1 h-px bg-border"
-                                        initial={{ scaleX: 0 }}
-                                        animate={{ scaleX: 1 }}
-                                        transition={{ duration: 0.5, delay: upcomingClasses.length * 0.08 + 0.3 }}
-                                    />
-                                </motion.div>
+                                        <ClassCard
+                                            entry={entry}
+                                            status={entry === currentClass ? 'current' : entry === nextClass ? 'next' : 'future'}
+                                            onClick={() => onEntryClick(entry)}
+                                            index={index}
+                                        />
+                                    </motion.div>
+                                ))}
+                            </StaggeredList>
 
-                                <AnimatePresence>
-                                    {showPastClasses && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                                            className="overflow-hidden"
-                                        >
-                                            {pastClasses.map((entry, index) => (
-                                                <motion.div
-                                                    key={entry.id}
-                                                    initial={{ opacity: 0, x: -20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ 
-                                                        delay: index * 0.05, 
-                                                        duration: 0.3,
-                                                        ease: "easeOut"
-                                                    }}
-                                                >
-                                                    <ClassCard
-                                                        entry={entry}
-                                                        status="past"
-                                                        onClick={() => onEntryClick(entry)}
-                                                    />
-                                                </motion.div>
-                                            ))}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </>
-                        )}
-                    </div>
+                            {/* Past Classes Section */}
+                            {pastClasses.length > 0 && (
+                                <>
+                                    <SectionDivider
+                                        label="Past Classes"
+                                        icon={<ChevronDown size={14} />}
+                                        count={pastClasses.length}
+                                        onToggle={() => setShowPastClasses(!showPastClasses)}
+                                        isExpanded={showPastClasses}
+                                        animated={true}
+                                    />
+
+                                    <AnimatePresence>
+                                        {showPastClasses && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                className="overflow-hidden space-y-3"
+                                            >
+                                                <StaggeredList staggerDelay={0.05} direction="left">
+                                                    {pastClasses.map((entry, index) => (
+                                                        <ClassCard
+                                                            key={entry.id}
+                                                            entry={entry}
+                                                            status="past"
+                                                            onClick={() => onEntryClick(entry)}
+                                                            index={index}
+                                                        />
+                                                    ))}
+                                                </StaggeredList>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </>
+                            )}
+                        </div>
+                    )}
                 </section>
+            )}
+
+            {/* Empty state when no classes today */}
+            {!isLoading && todayEntries.length === 0 && !currentClass && !nextClass && (
+                <motion.section
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                >
+                    <EmptyStateEnhanced
+                        title="No classes today!"
+                        description="Looks like you have a free day. Why not add some study time or plan for the week ahead?"
+                        icon="coffee"
+                        actionLabel="Add Class"
+                        onAction={onAddEntry}
+                    />
+                </motion.section>
             )}
 
             {/* PRODUCTIVITY WIDGETS */}

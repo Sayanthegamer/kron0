@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import type { TimeTableEntry } from '../types';
-import { MapPin, Clock, Pencil } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { MapPin, Clock, Pencil, Sparkles } from 'lucide-react';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { twMerge } from 'tailwind-merge';
 
 interface ClassCardProps {
     entry: TimeTableEntry;
     status: 'past' | 'current' | 'next' | 'future';
     onClick: () => void;
+    index?: number;
 }
 
 export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) => {
     const [isPressed, setIsPressed] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    
+    // Parallax effect
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+    const rotateX = useTransform(y, [-100, 100], [2, -2]);
+    const rotateY = useTransform(x, [-100, 100], [-2, 2]);
 
     const getStatusStyles = () => {
         switch (status) {
@@ -75,6 +83,25 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
 
     const { borderColor, glow, badge, gradient } = getStatusStyles();
 
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (status === 'past') return;
+        
+        const rect = e.currentTarget.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const offsetX = e.clientX - centerX;
+        const offsetY = e.clientY - centerY;
+        
+        x.set(offsetX);
+        y.set(offsetY);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+        setIsHovered(false);
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -86,7 +113,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
             }}
             whileHover={{ 
                 scale: status === 'past' ? 1 : 1.02,
-                y: status === 'past' ? 0 : -2,
+                y: status === 'past' ? 0 : -4,
                 transition: { type: "spring", stiffness: 400, damping: 17 }
             }}
             whileTap={{ 
@@ -98,6 +125,9 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
                 setTimeout(() => setIsPressed(false), 150);
                 onClick();
             }}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={handleMouseLeave}
             className={twMerge(
                 "relative overflow-hidden rounded-xl p-5 border backdrop-blur-md transition-all duration-300 cursor-pointer group",
                 "glass-card hover:bg-black/5 dark:hover:bg-white/10 hover-lift focus-ring",
@@ -105,7 +135,13 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
                 glow,
                 status === 'past' && 'grayscale-[0.5] opacity-75'
             )}
-            style={{ willChange: 'transform' }}
+            style={{ 
+                willChange: 'transform',
+                rotateX: status === 'past' ? 0 : rotateX,
+                rotateY: status === 'past' ? 0 : rotateY,
+                transformStyle: 'preserve-3d',
+                perspective: 1000
+            }}
         >
             {/* Animated Background Gradient */}
             <motion.div
@@ -115,7 +151,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
                 transition={{ duration: 0.2 }}
             />
 
-            {/* Enhanced Sidebar Color Strip */}
+            {/* Enhanced Sidebar Color Strip with Glow */}
             <motion.div
                 className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-full"
                 style={{ backgroundColor: entry.color || 'var(--primary)' }}
@@ -126,7 +162,24 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
                     ease: "easeOut",
                     delay: 0.1
                 }}
-            />
+            >
+                {/* Glow effect on hover */}
+                <motion.div
+                    className="absolute inset-0 rounded-r-full"
+                    style={{ 
+                        backgroundColor: entry.color || 'var(--primary)',
+                        filter: 'blur(8px)'
+                    }}
+                    animate={{
+                        opacity: isHovered && status !== 'past' ? [0.3, 0.6, 0.3] : 0,
+                    }}
+                    transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                />
+            </motion.div>
 
             {/* Shimmer Effect on Hover */}
             <motion.div
@@ -137,6 +190,24 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
                     transition: { duration: 0.6, ease: "easeInOut" }
                 }}
             />
+
+            {/* Sparkle effect for current/next classes */}
+            {(status === 'current' || status === 'next') && (
+                <motion.div
+                    className="absolute top-3 right-3 opacity-0 group-hover:opacity-100"
+                    initial={{ scale: 0, rotate: 0 }}
+                    whileHover={{ 
+                        scale: 1,
+                        rotate: 180,
+                        transition: { type: "spring", stiffness: 200, damping: 10 }
+                    }}
+                >
+                    <Sparkles 
+                        size={16} 
+                        className={status === 'current' ? 'text-primary' : 'text-secondary'}
+                    />
+                </motion.div>
+            )}
 
             <div className="flex justify-between items-start pl-3 gap-2 relative z-10">
                 <div className="flex-1 min-w-0">
