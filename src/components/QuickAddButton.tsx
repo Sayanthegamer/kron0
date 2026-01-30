@@ -49,7 +49,7 @@ export const QuickAddButton: React.FC<QuickAddButtonProps> = ({
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         className={`group relative flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-purple-600 text-primary-foreground font-semibold focus-ring overflow-hidden ${
-          expanded ? 'px-6 py-3 text-sm' : 'p-4'
+          expanded ? 'p-4 sm:px-6 sm:py-3 text-sm' : 'p-4'
         }`}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -123,7 +123,7 @@ export const QuickAddButton: React.FC<QuickAddButtonProps> = ({
             initial={{ opacity: 0, width: 0 }}
             animate={{ opacity: 1, width: 'auto' }}
             exit={{ opacity: 0, width: 0 }}
-            className="relative z-10"
+            className="relative z-10 hidden sm:inline whitespace-nowrap"
           >
             {label}
           </motion.span>

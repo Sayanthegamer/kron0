@@ -166,7 +166,7 @@ export const FocusMode: React.FC = () => {
                             )}
                             <div className="relative z-10 flex items-center justify-center gap-2">
                                 {modeData.icon}
-                                <span>{MODES[m].label}</span>
+                                <span className="hidden sm:inline whitespace-nowrap">{MODES[m].label}</span>
                             </div>
                         </button>
                     );
@@ -215,7 +215,7 @@ export const FocusMode: React.FC = () => {
                         initial={secondsChanged ? { scale: 0.8, opacity: 0.5, rotateX: -90 } : false}
                         animate={{ scale: 1, opacity: 1, rotateX: 0 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className={`text-7xl md:text-8xl font-bold font-mono tracking-tighter ${config.textGlow} timer-text-glow`}
+                        className={`text-6xl md:text-8xl font-bold font-mono tracking-tighter ${config.textGlow} timer-text-glow`}
                     >
                         {mins.toString().padStart(2, '0')}
                     </motion.div>
@@ -224,7 +224,7 @@ export const FocusMode: React.FC = () => {
                     <motion.div
                         animate={isActive ? { opacity: [1, 0.5, 1] } : { opacity: 1 }}
                         transition={{ duration: 1, repeat: isActive ? Infinity : 0 }}
-                        className={`text-5xl md:text-6xl font-bold font-mono ${config.textGlow} -my-4`}
+                        className={`text-4xl md:text-6xl font-bold font-mono ${config.textGlow} -my-2 md:-my-4`}
                     >
                         :
                     </motion.div>
@@ -235,35 +235,20 @@ export const FocusMode: React.FC = () => {
                         initial={{ scale: 0.8, opacity: 0.5, rotateX: -90 }}
                         animate={{ scale: 1, opacity: 1, rotateX: 0 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className={`text-7xl md:text-8xl font-bold font-mono tracking-tighter ${config.textGlow} timer-text-glow`}
+                        className={`text-6xl md:text-8xl font-bold font-mono tracking-tighter ${config.textGlow} timer-text-glow`}
                     >
                         {secs.toString().padStart(2, '0')}
                     </motion.div>
-
-                    {/* Time Labels */}
-                    <div className="flex items-center gap-12 mt-2">
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-xs text-muted-foreground font-semibold tracking-widest uppercase"
-                        >
-                            MM
-                        </motion.span>
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-xs text-muted-foreground font-semibold tracking-widest uppercase"
-                        >
-                            SS
-                        </motion.span>
-                    </div>
-
-                    {/* Status Indicator */}
-                    <StatusIndicator
-                        isActive={isActive}
-                        mode={mode}
-                    />
                 </div>
+
+            </div>
+
+            {/* Status Indicator - Moved below timer */}
+            <div className="relative z-10">
+                <StatusIndicator
+                    isActive={isActive}
+                    mode={mode}
+                />
             </div>
 
             {/* Controls - Enhanced Button Group */}

@@ -13,10 +13,10 @@ const TOAST_ICONS: Record<ToastType, React.ElementType> = {
 };
 
 const TOAST_COLORS: Record<ToastType, string> = {
-  success: 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-200',
-  error: 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-200',
-  warning: 'bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-200',
-  info: 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-200'
+  success: 'bg-green-50 border-green-200 text-green-800 dark:bg-green-950/90 dark:border-green-800 dark:text-green-200',
+  error: 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950/90 dark:border-red-800 dark:text-red-200',
+  warning: 'bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-950/90 dark:border-yellow-800 dark:text-yellow-200',
+  info: 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950/90 dark:border-blue-800 dark:text-blue-200'
 };
 
 const ICON_COLORS: Record<ToastType, string> = {
@@ -106,7 +106,7 @@ const ToastContainer: React.FC = () => {
   const { toasts, dismissToast } = useToast();
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2 pointer-events-none">
+    <div className="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-50 space-y-2 pointer-events-none flex flex-col items-center sm:items-end">
       <AnimatePresence>
         {toasts.map((toast) => (
           <ToastItem
@@ -130,14 +130,14 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 300, scale: 0.8 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 300, scale: 0.8 }}
+      initial={{ opacity: 0, y: -20, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className={`
         pointer-events-auto
-        min-w-80 max-w-md
-        border rounded-lg shadow-lg
+        w-full sm:w-80 sm:min-w-80 max-w-md
+        border rounded-lg shadow-xl backdrop-blur-xl
         p-4 pr-12
         ${TOAST_COLORS[toast.type]}
         relative
