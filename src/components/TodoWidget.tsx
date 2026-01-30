@@ -73,19 +73,9 @@ export const TodoWidget: React.FC = () => {
                     className="text-xl font-bold text-foreground flex items-center gap-2"
                     whileHover={{ scale: 1.02 }}
                 >
-                    <motion.span
-                        animate={{ 
-                            rotate: [0, 10, -10, 0],
-                            scale: [1, 1.1, 1]
-                        }}
-                        transition={{ 
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                        }}
-                    >
+                    <span>
                         Tasks
-                    </motion.span>
+                    </span>
                     <motion.span 
                         className="text-xs bg-primary/20 px-2.5 py-1 rounded-full text-primary font-semibold border border-primary/30"
                         initial={{ scale: 0 }}
