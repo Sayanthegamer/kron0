@@ -1,49 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { FocusSession } from '../types';
+import React, { useState, useEffect } from 'react';
+import { type FocusSession, type TimerMode } from '../types';
+import { MODES } from '../constants';
 import { db } from '../lib/firebase';
 import { collection, addDoc, query, where, getDocs, orderBy } from 'firebase/firestore';
-import { useAuth } from './AuthContext';
-import { useToast } from './ToastContext';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
-
-export type TimerMode = 'focus' | 'short' | 'long' | 'custom';
-
-export interface ModeConfig {
-    label: string;
-    minutes: number;
-    color: string;
-}
-
-export const MODES: Record<TimerMode, ModeConfig> = {
-    focus: { label: 'Focus', minutes: 25, color: 'text-primary' },
-    short: { label: 'Short Break', minutes: 5, color: 'text-teal-500' },
-    long: { label: 'Long Break', minutes: 15, color: 'text-indigo-500' },
-    custom: { label: 'Custom', minutes: 25, color: 'text-pink-500' }
-};
-
-interface FocusContextType {
-    isFocusMode: boolean;
-    toggleFocusMode: () => void;
-
-    // Timer State
-    mode: TimerMode;
-    setMode: (mode: TimerMode) => void;
-    timeLeft: number;
-    isActive: boolean;
-    toggleTimer: () => void;
-    resetTimer: () => void;
-    setCustomDuration: (minutes: number) => void;
-    customMinutes: number; // Exposed for UI calculations
-
-    // History
-    sessionHistory: FocusSession[];
-    isSaving: boolean;
-    lastError: string | null;
-    clearError: () => void;
-    retryLastOperation: () => void;
-}
-
-const FocusContext = createContext<FocusContextType | undefined>(undefined);
+import { FocusContext } from './definitions/FocusContextDefinition';
 
 const HISTORY_COLLECTION = 'focus_history';
 
@@ -62,12 +25,14 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [isSaving, setIsSaving] = useState(false);
     const [lastError, setLastError] = useState<string | null>(null);
     const [lastFailedOperation, setLastFailedOperation] = useState<(() => Promise<void>) | null>(null);
+    const [lastCompletedSession, setLastCompletedSession] = useState<FocusSession | null>(null);
 
     // NO Audio element needed using Web Audio API
 
     // Play Beep Function
     const playBeep = () => {
         try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
             if (!AudioContext) return;
 
@@ -108,6 +73,7 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             }
         };
         loadHistory();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const clearError = () => setLastError(null);
@@ -127,7 +93,9 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             
             try {
                 const docRef = await addDoc(collection(db, HISTORY_COLLECTION), sessionData);
-                setSessionHistory(prev => [{ ...sessionData, id: docRef.id }, ...prev]);
+                const newSession = { ...sessionData, id: docRef.id };
+                setSessionHistory(prev => [newSession, ...prev]);
+                setLastCompletedSession(newSession);
                 showSuccess('Session saved', 'Your focus session has been recorded');
                 setLastError(null);
             } catch (error) {
@@ -148,7 +116,7 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
         try {
             await retryWithBackoff(operation, 3, 1000);
-        } catch (error) {
+        } catch {
             // Error already handled in operation
         }
     };
@@ -177,6 +145,7 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             }
         }
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isActive, timeLeft, user, mode, customMinutes]);
 
     const toggleTimer = () => setIsActive(prev => !prev);
@@ -220,15 +189,11 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             isSaving,
             lastError,
             clearError,
-            retryLastOperation
+            retryLastOperation,
+            lastCompletedSession
         }}>
             {children}
         </FocusContext.Provider>
     );
 };
 
-export const useFocus = () => {
-    const context = useContext(FocusContext);
-    if (!context) throw new Error('useFocus must be used within a FocusProvider');
-    return context;
-};

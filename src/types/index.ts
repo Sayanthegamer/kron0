@@ -31,3 +31,32 @@ export interface AppSettings {
     theme: 'light' | 'dark' | 'system';
     notificationsEnabled: boolean;
 }
+
+export type TimerMode = 'focus' | 'short' | 'long' | 'custom';
+
+export interface ModeConfig {
+    label: string;
+    minutes: number;
+    color: string;
+}
+
+export interface FocusContextType {
+    isFocusMode: boolean;
+    toggleFocusMode: () => void;
+    mode: TimerMode;
+    setMode: (mode: TimerMode) => void;
+    timeLeft: number;
+    isActive: boolean;
+    toggleTimer: () => void;
+    resetTimer: () => void;
+    setCustomDuration: (minutes: number) => void;
+    customMinutes: number;
+    sessionHistory: FocusSession[];
+    isSaving: boolean;
+    lastError: string | null;
+    clearError: () => void;
+    retryLastOperation: () => void;
+    lastCompletedSession: FocusSession | null;
+}
+
+export * from './toast';

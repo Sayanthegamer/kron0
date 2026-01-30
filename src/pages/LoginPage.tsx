@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 
@@ -18,7 +18,7 @@ export const LoginPage: React.FC = () => {
             } else {
                 await signInWithEmail(email, password);
             }
-        } catch (err: any) {
+        } catch (err) {
             // AuthContext already showed error toast via showError()
             // Just log if needed for debugging
             console.error('Auth error:', err);
@@ -29,7 +29,7 @@ export const LoginPage: React.FC = () => {
         try {
             await signInWithGoogle();
             // AuthContext shows success toast
-        } catch (err: any) {
+        } catch (err) {
             // AuthContext already showed error toast
             console.error('Google sign in error:', err);
         }

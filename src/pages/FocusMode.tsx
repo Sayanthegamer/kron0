@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, RotateCcw, Target, Coffee, Wind, Settings2 } from 'lucide-react';
-import { useFocus, MODES, type TimerMode } from '../context/FocusContext';
+import { useFocus } from '../hooks/useFocus';
+import { MODES } from '../constants';
+import { type TimerMode } from '../types';
 import { TimerProgressRing } from '../components/TimerProgressRing';
 import { FloatingParticles } from '../components/FloatingParticles';
 import { StatusIndicator } from '../components/StatusIndicator';
@@ -17,11 +19,11 @@ export const FocusMode: React.FC = () => {
         resetTimer,
         setCustomDuration,
         customMinutes,
-        sessionHistory
+        sessionHistory,
+        lastCompletedSession
     } = useFocus();
 
     const [showCelebration, setShowCelebration] = useState(false);
-    const [completedSessionTime, setCompletedSessionTime] = useState(0);
     const [prevSeconds, setPrevSeconds] = useState(timeLeft);
 
     // Track second changes for animation
@@ -34,11 +36,11 @@ export const FocusMode: React.FC = () => {
 
     // Show celebration when timer completes
     useEffect(() => {
-        if (timeLeft === 0 && !isActive && !showCelebration) {
+        if (lastCompletedSession && !showCelebration && (Date.now() - lastCompletedSession.startTime) < 5000) {
             setShowCelebration(true);
-            setCompletedSessionTime(mode === 'custom' ? customMinutes : MODES[mode].minutes);
         }
-    }, [timeLeft, isActive, showCelebration, mode, customMinutes]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lastCompletedSession]);
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -111,7 +113,7 @@ export const FocusMode: React.FC = () => {
             {/* Celebration Overlay */}
             <CelebrationOverlay
                 show={showCelebration}
-                completedMinutes={completedSessionTime}
+                completedMinutes={lastCompletedSession?.duration || 0}
                 sessionCount={sessionHistory.length}
                 mode={mode}
                 onContinue={() => setShowCelebration(false)}

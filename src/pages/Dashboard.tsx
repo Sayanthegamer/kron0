@@ -14,8 +14,8 @@ import { format, isWithinInterval, parse, getDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Sparkles, ChevronDown, Zap, Calendar } from 'lucide-react';
 
-import { useAuth } from '../context/AuthContext';
-import { useTimetable } from '../context/TimetableContext';
+import { useAuth } from '../hooks/useAuth';
+import { useTimetable } from '../hooks/useTimetable';
 
 interface DashboardProps {
     onEntryClick: (entry: TimeTableEntry) => void;

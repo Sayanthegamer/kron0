@@ -1,2 +1,4 @@
-// Re-export the improved toast system from lib/toast
-export { ToastProvider, useToast } from '../lib/toast';
+import { createContext } from 'react';
+import type { ToastContextType } from '../types';
+
+export const ToastContext = createContext<ToastContextType | undefined>(undefined);

@@ -1,7 +1,6 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useToast } from '../context/ToastContext';
 import { logError } from '../lib/errors';
 
 interface Props {
@@ -56,28 +55,6 @@ interface ErrorFallbackProps {
 }
 
 const ErrorFallbackContent: React.FC<ErrorFallbackProps> = ({ error, retry }) => {
-  const [showError, setShowError] = React.useState<((title: string, message?: string) => void) | null>(null);
-
-  // ✅ Safely try to get toast, with fallback
-  React.useEffect(() => {
-    try {
-      const toast = useToast();
-      setShowError(() => toast.showError);
-    } catch (e) {
-      // ✅ If toast fails, use console fallback
-      console.error('Toast system unavailable in error boundary:', e);
-      setShowError(() => (title: string, message?: string) => {
-        console.error(`${title}: ${message}`);
-      });
-    }
-  }, []);
-
-  React.useEffect(() => {
-    if (error && showError) {
-      showError('Something went wrong', 'An unexpected error occurred. Please try again.');
-    }
-  }, [error, showError]);
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <motion.div
@@ -127,16 +104,6 @@ const ErrorFallbackContent: React.FC<ErrorFallbackProps> = ({ error, retry }) =>
 const ErrorFallback: React.FC<ErrorFallbackProps> = (props) => (
   <ErrorFallbackContent {...props} />
 );
-
-// Hook for error handling in functional components
-export const useErrorHandler = () => {
-  const { showError } = useToast();
-  
-  return React.useCallback((error: any, context?: string) => {
-    logError(error, context);
-    showError('Error', 'Something went wrong. Please try again.');
-  }, [showError]);
-};
 
 // Loading state component
 interface LoadingStateProps {

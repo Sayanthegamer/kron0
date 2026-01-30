@@ -48,22 +48,28 @@ const FIREBASE_ERROR_MAP: Record<string, ErrorCode> = {
   'firestore/unauthenticated': ErrorCode.AUTH_ERROR
 };
 
+interface AppError extends Error {
+  code?: string;
+}
+
 // Determine error code from error object
-export const getErrorCode = (error: any): ErrorCode => {
+export const getErrorCode = (error: unknown): ErrorCode => {
   if (!error) return ErrorCode.UNKNOWN_ERROR;
   
+  const appError = error as AppError;
+
   // Check for Firebase error code
-  if (error.code && FIREBASE_ERROR_MAP[error.code]) {
-    return FIREBASE_ERROR_MAP[error.code];
+  if (appError.code && FIREBASE_ERROR_MAP[appError.code]) {
+    return FIREBASE_ERROR_MAP[appError.code];
   }
   
   // Check for network errors
-  if (error.message?.includes('fetch') || error.message?.includes('network')) {
+  if (appError.message?.includes('fetch') || appError.message?.includes('network')) {
     return ErrorCode.NETWORK_ERROR;
   }
   
   // Check for auth errors
-  if (error.name?.includes('Auth') || error.message?.includes('auth')) {
+  if (appError.name?.includes('Auth') || appError.message?.includes('auth')) {
     return ErrorCode.AUTH_ERROR;
   }
   
@@ -72,15 +78,16 @@ export const getErrorCode = (error: any): ErrorCode => {
 };
 
 // Get user-friendly error message
-export const getErrorMessage = (error: any): string => {
+export const getErrorMessage = (error: unknown): string => {
   const errorCode = getErrorCode(error);
   return ERROR_MESSAGES[errorCode];
 };
 
 // Error logger function for debugging
-export const logError = (error: any, context?: string): void => {
+export const logError = (error: unknown, context?: string): void => {
   const timestamp = new Date().toISOString();
   const contextInfo = context ? `[${context}] ` : '';
+  const appError = error as AppError;
   
   console.group(`${contextInfo}🚨 Error at ${timestamp}`);
   console.error('Error object:', error);
@@ -88,14 +95,11 @@ export const logError = (error: any, context?: string): void => {
   console.error('Error message:', getErrorMessage(error));
   
   // Log stack trace for debugging
-  if (error?.stack) {
-    console.error('Stack trace:', error.stack);
+  if (appError?.stack) {
+    console.error('Stack trace:', appError.stack);
   }
   
   console.groupEnd();
-  
-  // Here you could also send to external error tracking service
-  // e.g., Sentry.captureException(error);
 };
 
 // Retry utility with exponential backoff
@@ -104,7 +108,7 @@ export const retryWithBackoff = async <T>(
   maxRetries: number = 3,
   baseDelay: number = 1000
 ): Promise<T> => {
-  let lastError: any;
+  let lastError: unknown;
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -127,7 +131,7 @@ export const retryWithBackoff = async <T>(
 };
 
 // Check if error is retriable
-export const isRetriableError = (error: any): boolean => {
+export const isRetriableError = (error: unknown): boolean => {
   const errorCode = getErrorCode(error);
   const retriableCodes: ErrorCode[] = [
     ErrorCode.NETWORK_ERROR,

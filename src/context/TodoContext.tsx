@@ -1,24 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { TodoItem } from '../types';
 import { db } from '../lib/firebase';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
-import { useAuth } from './AuthContext';
-import { useToast } from './ToastContext';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
-
-interface TodoContextType {
-    todos: TodoItem[];
-    isLoading: boolean;
-    isSaving: boolean;
-    lastError: string | null;
-    addTodo: (text: string) => Promise<void>;
-    toggleTodo: (id: string) => Promise<void>;
-    deleteTodo: (id: string) => Promise<void>;
-    clearError: () => void;
-    retryLastOperation: () => void;
-}
-
-const TodoContext = createContext<TodoContextType | undefined>(undefined);
+import { TodoContext } from './definitions/TodoContextDefinition';
 
 const TODOS_COLLECTION = 'todos';
 
@@ -130,7 +117,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         try {
             await retryWithBackoff(operation, 3, 1000);
-        } catch (error) {
+        } catch {
             // Error already handled in operation
         }
     };
@@ -167,7 +154,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         try {
             await retryWithBackoff(operation, 3, 1000);
-        } catch (error) {
+        } catch {
             // Error already handled in operation
         }
     };
@@ -200,7 +187,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         try {
             await retryWithBackoff(operation, 3, 1000);
-        } catch (error) {
+        } catch {
             // Error already handled in operation
         }
     };
@@ -222,10 +209,3 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 };
 
-export const useTodo = () => {
-    const context = useContext(TodoContext);
-    if (context === undefined) {
-        throw new Error('useTodo must be used within a TodoProvider');
-    }
-    return context;
-};

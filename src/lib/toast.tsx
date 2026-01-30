@@ -1,32 +1,11 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
+import { ToastContext } from '../context/ToastContext';
+import { useToast } from '../hooks/useToast';
+import type { Toast, ToastType } from '../types';
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
-
-export interface Toast {
-  id: string;
-  type: ToastType;
-  title: string;
-  message?: string;
-  duration?: number;
-  dismissible?: boolean;
-}
-
-interface ToastContextType {
-  toasts: Toast[];
-  showToast: (toast: Omit<Toast, 'id'>) => void;
-  showSuccess: (title: string, message?: string) => void;
-  showError: (title: string, message?: string) => void;
-  showWarning: (title: string, message?: string) => void;
-  showInfo: (title: string, message?: string) => void;
-  dismissToast: (id: string) => void;
-  clearAll: () => void;
-}
-
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
-
-const TOAST_ICONS: Record<ToastType, any> = {
+const TOAST_ICONS: Record<ToastType, React.ElementType> = {
   success: CheckCircle,
   error: XCircle,
   warning: AlertCircle,
@@ -193,12 +172,4 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss }) => {
       )}
     </motion.div>
   );
-};
-
-export const useToast = () => {
-  const context = useContext(ToastContext);
-  if (context === undefined) {
-    throw new Error('useToast must be used within a ToastProvider');
-  }
-  return context;
 };
