@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTimetable } from '../context/TimetableContext';
+import { useTimetable } from '../hooks/useTimetable';
 import type { TimeTableEntry, DayOfWeek } from '../types';
 import { ClassCard } from './ClassCard';
 import { motion, AnimatePresence } from 'framer-motion';

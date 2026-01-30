@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth, googleProvider } from '../lib/firebase';
 import {
     signInWithPopup,
@@ -9,21 +9,8 @@ import {
 } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { getErrorMessage, logError } from '../lib/errors';
-import { useToast } from './ToastContext';
-
-interface AuthContextType {
-    user: User | null;
-    isLoading: boolean;
-    lastError: string | null;
-    isSigningIn: boolean;
-    signInWithGoogle: () => Promise<void>;
-    signInWithEmail: (email: string, password: string) => Promise<void>;
-    signUpWithEmail: (email: string, password: string) => Promise<void>;
-    logout: () => Promise<void>;
-    clearError: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { useToast } from '../hooks/useToast';
+import { AuthContext } from './definitions/AuthContextDefinition';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { showError, showSuccess } = useToast();
@@ -155,10 +142,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 };
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};

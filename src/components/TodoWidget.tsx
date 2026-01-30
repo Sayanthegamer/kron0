@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTodo } from '../context/TodoContext';
+import { useTodo } from '../hooks/useTodo';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Plus, Trash2, Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
 import { RetryOperation } from './ErrorBoundary';

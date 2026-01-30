@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { useTimetable } from '../context/TimetableContext';
+import { useTimetable } from './useTimetable';
 import { useScheduleStatus } from './useScheduleStatus';
 import { differenceInMinutes, parse } from 'date-fns';
 
@@ -40,7 +40,7 @@ export function useNotifications() {
           body,
           icon: '/pwa-192x192.png',
           vibrate: [200, 100, 200]
-        } as any);
+        } as NotificationOptions);
       } catch (error) {
         // ✅ Log but don't crash if notification fails
         console.warn('Failed to send notification:', error);

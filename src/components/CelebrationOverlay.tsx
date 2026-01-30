@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, ArrowRight, TrendingUp, Flame, Clock } from 'lucide-react';
 import { ConfettiExplosion, StarBurst } from './ConfettiExplosion';
-import type { TimerMode } from '../context/FocusContext';
+import type { TimerMode } from '../types';
 
 interface CelebrationOverlayProps {
     show: boolean;

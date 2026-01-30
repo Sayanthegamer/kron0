@@ -125,7 +125,7 @@ export const OnboardingTour: React.FC = () => {
     const effectivePosition = (() => {
         if (step.targetId === 'welcome-step') return 'bottom';
 
-        let pos = step.position || 'bottom';
+        const pos = step.position || 'bottom';
         const SPACE_THRESHOLD = 300; // Estimated card height + padding
 
         const topSpace = targetRect.top;

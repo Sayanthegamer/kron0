@@ -1,11 +1,13 @@
 import React, { Suspense, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
 import { FocusProvider } from './context/FocusContext';
-import { TimetableProvider, useTimetable } from './context/TimetableContext';
+import { TimetableProvider } from './context/TimetableContext';
+import { useTimetable } from './hooks/useTimetable';
 import { TodoProvider } from './context/TodoContext';
-import { ToastProvider } from './context/ToastContext';
+import { ToastProvider } from './lib/toast';
 
 import { EntryModal } from './components/EntryModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
