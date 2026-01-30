@@ -291,16 +291,16 @@ export const TodoWidget: React.FC = () => {
                             </motion.span>
 
                             <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => deleteTodo(todo.id)}
-                                className="opacity-0 group-hover/item:opacity-100 p-1.5 text-red-400 hover:bg-red-400/20 rounded-lg transition-all duration-300"
-                                initial={{ x: 10 }}
                                 whileHover={{ 
+                                    scale: 1.1,
                                     x: 0,
                                     backgroundColor: 'rgba(239, 68, 68, 0.2)',
                                     color: 'rgb(239, 68, 68)'
                                 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => deleteTodo(todo.id)}
+                                className="opacity-0 group-hover/item:opacity-100 p-1.5 text-red-400 hover:bg-red-400/20 rounded-lg transition-all duration-300"
+                                initial={{ x: 10 }}
                             >
                                 <motion.div
                                     whileHover={{ rotate: 90 }}

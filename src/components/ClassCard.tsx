@@ -198,12 +198,13 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
                 {/* Enhanced Edit Indicator */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0 }}
-                    whileHover={{ opacity: 1, scale: 1 }}
-                    className="absolute top-4 right-4 bg-black/20 dark:bg-white/10 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 backdrop-blur-sm"
                     whileHover={{ 
+                        opacity: 1, 
+                        scale: 1,
                         backgroundColor: 'rgba(139, 47, 201, 0.2)',
                         transition: { duration: 0.2 }
                     }}
+                    className="absolute top-4 right-4 bg-black/20 dark:bg-white/10 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 backdrop-blur-sm"
                 >
                     <Pencil size={14} className="text-muted-foreground group-hover:text-primary transition-colors duration-200" />
                 </motion.div>
