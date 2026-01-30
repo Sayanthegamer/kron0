@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { useFocus } from '../context/FocusContext';
-import { useTimetable } from '../context/TimetableContext';
+import { useFocus } from '../hooks/useFocus';
+import { useTimetable } from '../hooks/useTimetable';
+import type { DayOfWeek } from '../types';
 import { motion } from 'framer-motion';
 import { PieChart, Clock, Zap, TrendingUp, Flame, Sunrise, Sunset, Moon } from 'lucide-react';
 import { differenceInMinutes, parse, startOfDay, endOfDay, isWithinInterval, subDays, format, startOfWeek, endOfWeek } from 'date-fns';
@@ -24,7 +25,7 @@ export const StatsWidget: React.FC = () => {
         const todayFocusMinutes = todaySessions.reduce((acc, s) => acc + s.duration, 0);
 
         // Today's Class Time
-        const dayName = format(now, 'EEEE') as any;
+        const dayName = format(now, 'EEEE') as DayOfWeek;
         const todayClasses = entries.filter(e => e.days.includes(dayName));
         let classMinutes = 0;
         todayClasses.forEach(e => {

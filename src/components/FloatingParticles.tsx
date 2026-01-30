@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface FloatingParticlesProps {
@@ -6,23 +6,37 @@ interface FloatingParticlesProps {
     modeColor: string;
 }
 
+interface Particle {
+    id: number;
+    size: number;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    delay: number;
+    duration: number;
+    opacity: number;
+}
+
 export const FloatingParticles: React.FC<FloatingParticlesProps> = ({
     isActive,
     modeColor
 }) => {
-    if (!isActive) return null;
+    const [particles] = useState<Particle[]>(() =>
+        Array.from({ length: 30 }, (_, i) => ({
+            id: i,
+            size: Math.random() * 4 + 2,
+            startX: Math.random() * 100,
+            startY: Math.random() * 100,
+            endX: Math.random() * 100,
+            endY: Math.random() * 100 - 50,
+            delay: Math.random() * 2,
+            duration: 3 + Math.random() * 2,
+            opacity: Math.random() * 0.5 + 0.2
+        }))
+    );
 
-    const particles = Array.from({ length: 30 }, (_, i) => ({
-        id: i,
-        size: Math.random() * 4 + 2,
-        startX: Math.random() * 100,
-        startY: Math.random() * 100,
-        endX: Math.random() * 100,
-        endY: Math.random() * 100 - 50,
-        delay: Math.random() * 2,
-        duration: 3 + Math.random() * 2,
-        opacity: Math.random() * 0.5 + 0.2
-    }));
+    if (!isActive) return null;
 
     return (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

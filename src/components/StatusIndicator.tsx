@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { TimerMode } from '../context/FocusContext';
+import type { TimerMode } from '../types';
 
 interface StatusIndicatorProps {
     isActive: boolean;

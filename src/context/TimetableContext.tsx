@@ -1,26 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { TimeTableEntry, AppSettings } from '../types';
 import { db } from '../lib/firebase';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
-import { useAuth } from './AuthContext';
-import { useToast } from './ToastContext';
+import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
-
-interface TimetableContextType {
-    entries: TimeTableEntry[];
-    settings: AppSettings;
-    isLoading: boolean;
-    isSaving: boolean;
-    lastError: string | null;
-    addEntry: (entry: Omit<TimeTableEntry, 'id'>) => Promise<void>;
-    updateEntry: (entry: TimeTableEntry) => Promise<void>;
-    deleteEntry: (id: string) => Promise<void>;
-    updateSettings: (settings: Partial<AppSettings>) => void;
-    clearError: () => void;
-    retryLastOperation: () => void;
-}
-
-const TimetableContext = createContext<TimetableContextType | undefined>(undefined);
+import { TimetableContext } from './definitions/TimetableContextDefinition';
 
 const ENTRIES_COLLECTION = 'entries';
 const SETTINGS_KEY = 'timetable_settings';
@@ -141,7 +126,7 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         // Use retry logic for Firestore operations
         try {
             await retryWithBackoff(operation, 3, 1000);
-        } catch (error) {
+        } catch {
             // Error already handled in operation
         }
     };
@@ -175,7 +160,7 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         try {
             await retryWithBackoff(operation, 3, 1000);
-        } catch (error) {
+        } catch {
             // Error already handled in operation
         }
     };
@@ -208,7 +193,7 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         try {
             await retryWithBackoff(operation, 3, 1000);
-        } catch (error) {
+        } catch {
             // Error already handled in operation
         }
     };
@@ -236,10 +221,3 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     );
 };
 
-export const useTimetable = () => {
-    const context = useContext(TimetableContext);
-    if (context === undefined) {
-        throw new Error('useTimetable must be used within a TimetableProvider');
-    }
-    return context;
-};

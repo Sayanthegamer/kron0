@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, AlertTriangle, Loader2 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -73,9 +73,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/60 z-[300] backdrop-blur-sm"
+                        className="fixed inset-0 bg-black/60 z-[190] backdrop-blur-sm"
                     />
-                    <div className="fixed inset-0 z-[301] flex items-center justify-center p-4 pointer-events-none">
+                    <div className="fixed inset-0 z-[191] flex items-center justify-center p-4 pointer-events-none">
                         <motion.div
                             initial={{ scale: 0.95, y: 20 }}
                             animate={{ scale: 1, y: 0 }}

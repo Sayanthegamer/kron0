@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useTimetable } from '../context/TimetableContext';
-import type { TimeTableEntry, DayOfWeek } from '../types';
+import { useTimetable } from './useTimetable';
+import type { DayOfWeek } from '../types';
 import { isWithinInterval, parse, getDay } from 'date-fns';
+
+import { useMemo } from 'react';
 
 export function useScheduleStatus() {
     const { entries } = useTimetable();
-    const [currentClass, setCurrentClass] = useState<TimeTableEntry | null>(null);
-    const [nextClass, setNextClass] = useState<TimeTableEntry | null>(null);
     const [now, setNow] = useState(new Date());
 
     useEffect(() => {
@@ -14,7 +14,7 @@ export function useScheduleStatus() {
         return () => clearInterval(timer);
     }, []);
 
-    useEffect(() => {
+    const { currentClass, nextClass } = useMemo(() => {
         // 1. Get current day name
         const days: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const currentDayName = days[getDay(now)];
@@ -27,7 +27,7 @@ export function useScheduleStatus() {
             const start = parse(entry.startTime, 'HH:mm', now);
             const end = parse(entry.endTime, 'HH:mm', now);
             return isWithinInterval(now, { start, end });
-        });
+        }) || null;
 
         // 4. Find next class
         // Sort by start time first
@@ -38,11 +38,9 @@ export function useScheduleStatus() {
         const next = sortedToday.find(entry => {
             const start = parse(entry.startTime, 'HH:mm', now);
             return now < start;
-        });
+        }) || null;
 
-        setCurrentClass(current || null);
-        setNextClass(next || null);
-
+        return { currentClass: current, nextClass: next };
     }, [now, entries]);
 
     return { currentClass, nextClass, now };

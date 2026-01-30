@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import type { TimeTableEntry, DayOfWeek } from '../types';
 import { X, Trash2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTimetable } from '../context/TimetableContext';
+import { useTimetable } from '../hooks/useTimetable';
 
 interface EntryModalProps {
     isOpen: boolean;
@@ -30,7 +30,10 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [touched, setTouched] = useState<Record<string, boolean>>({});
 
+    // Reset form when modal opens
     useEffect(() => {
+        if (!isOpen) return;
+
         if (initialData) {
             setFormData(initialData);
         } else {
@@ -45,14 +48,17 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
         }
         setErrors({});
         setTouched({});
-    }, [initialData, defaultDay, isOpen]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
 
-    const validateField = (name: string, value: any) => {
+    const validateField = (name: string, value: string | string[] | undefined) => {
         switch (name) {
-            case 'subject':
-                if (!value || value.trim().length === 0) return 'Subject is required';
-                if (value.trim().length < 2) return 'Subject must be at least 2 characters';
+            case 'subject': {
+                const strValue = typeof value === 'string' ? value : '';
+                if (!strValue || strValue.trim().length === 0) return 'Subject is required';
+                if (strValue.trim().length < 2) return 'Subject must be at least 2 characters';
                 return '';
+            }
             case 'days':
                 if (!value || value.length === 0) return 'Select at least one day';
                 return '';
@@ -70,13 +76,13 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
         }
     };
 
-    const handleBlur = (name: string, value: any) => {
+    const handleBlur = (name: string, value: string | string[] | undefined) => {
         setTouched(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
         setErrors(prev => ({ ...prev, [name]: error }));
     };
 
-    const handleChange = (name: string, value: any) => {
+    const handleChange = (name: string, value: string | string[] | undefined) => {
         setFormData(prev => ({ ...prev, [name]: value }));
         if (touched[name]) {
             const error = validateField(name, value);
