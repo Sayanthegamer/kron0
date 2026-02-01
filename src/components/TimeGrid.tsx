@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Plus, Play } from 'lucide-react';
+import { Clock, Plus, Play, MoreHorizontal } from 'lucide-react';
 import { format, parse, isWithinInterval, set, differenceInMinutes } from 'date-fns';
 import type { TimeTableEntry } from '../types';
 

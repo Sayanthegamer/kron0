@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { format, isToday, addDays } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import type { DayOfWeek } from '../types';
 
 interface AnimatedDayPillProps {
