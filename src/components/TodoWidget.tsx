@@ -1,28 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTodo } from '../hooks/useTodo';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Plus, Trash2, Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
+import { Sparkles, AlertCircle, TrendingUp, Trophy } from 'lucide-react';
 import { RetryOperation } from './ErrorBoundary';
+import { AnimatedTodoItem } from './todo/AnimatedTodoItem';
+import { TodoInput } from './todo/TodoInput';
+import { TodoFilters, type TodoFilterType } from './todo/TodoFilters';
+import { TodoSkeleton } from './todo/TodoSkeleton';
+import { ConfettiExplosion } from './ConfettiExplosion';
 
 export const TodoWidget: React.FC = () => {
-    const { todos, addTodo, toggleTodo, deleteTodo, isSaving, lastError, retryLastOperation } = useTodo();
-    const [newItem, setNewItem] = useState('');
-    const [isInputFocused, setIsInputFocused] = useState(false);
+    const { todos, addTodo, toggleTodo, deleteTodo, isSaving, isLoading, lastError, retryLastOperation } = useTodo();
+    const [filter, setFilter] = useState<TodoFilterType>('all');
+    const [showConfetti, setShowConfetti] = useState(false);
+    const prevCompletedCountRef = React.useRef(0);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (newItem.trim()) {
-            try {
-                await addTodo(newItem.trim());
-                setNewItem('');
-            } catch (error) {
-                // Error is handled by the context
-                console.error('Failed to add todo:', error);
-            }
+    const completedCount = todos.filter(t => t.completed).length;
+    const totalCount = todos.length;
+    const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+
+    // Detect completion for confetti
+    useEffect(() => {
+        const prevCount = prevCompletedCountRef.current;
+        if (completedCount > prevCount && completedCount === totalCount && totalCount > 0) {
+            const timer = setTimeout(() => {
+                setShowConfetti(true);
+                setTimeout(() => setShowConfetti(false), 3000);
+            }, 100);
+            
+            prevCompletedCountRef.current = completedCount;
+            return () => clearTimeout(timer);
         }
-    };
+        prevCompletedCountRef.current = completedCount;
+    }, [completedCount, totalCount]);
 
-    const sortedTodos = [...todos].sort((a, b) => {
+    const filteredTodos = todos.filter(todo => {
+        if (filter === 'active') return !todo.completed;
+        if (filter === 'completed') return todo.completed;
+        return true;
+    });
+
+    // Custom sort: Uncompleted first, then by date
+    const sortedTodos = [...filteredTodos].sort((a, b) => {
         if (a.completed === b.completed) return b.createdAt - a.createdAt;
         return a.completed ? 1 : -1;
     });
@@ -31,327 +50,141 @@ export const TodoWidget: React.FC = () => {
 
     return (
         <motion.div 
-            className="glass-card p-6 rounded-xl relative overflow-hidden group hover-lift"
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ 
-                duration: 0.5, 
-                ease: "easeOut",
-                type: "spring",
-                stiffness: 100,
-                damping: 15
-            }}
-            whileHover={{ 
-                y: -2,
-                transition: { type: "spring", stiffness: 300, damping: 20 }
-            }}
+            className="glass-card p-6 rounded-2xl relative overflow-hidden group hover-lift border border-white/10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
         >
+            {/* Confetti Overlay */}
+            <div className="absolute inset-0 pointer-events-none z-50">
+                <ConfettiExplosion active={showConfetti} />
+            </div>
+
             {/* Decorative background element */}
             <motion.div 
-                className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-smooth"
+                className="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl pointer-events-none opacity-50"
                 animate={{ 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, 0]
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.5, 0.3],
                 }}
                 transition={{ 
-                    duration: 4,
+                    duration: 8,
                     repeat: Infinity,
                     ease: "easeInOut"
                 }}
-            >
-                <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full blur-2xl" />
-            </motion.div>
+            />
 
-            {/* Enhanced Header */}
-            <motion.div 
-                className="flex items-center justify-between mb-6"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-            >
-                <motion.h3 
-                    className="text-xl font-bold text-foreground flex items-center gap-2"
-                    whileHover={{ scale: 1.02 }}
-                >
-                    <span>
-                        Tasks
-                    </span>
-                    <motion.span 
-                        className="text-xs bg-primary/20 px-2.5 py-1 rounded-full text-primary font-semibold border border-primary/30"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ 
-                            delay: 0.4,
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 15
-                        }}
-                        whileHover={{ 
-                            scale: 1.1,
-                            backgroundColor: 'rgba(139, 47, 201, 0.3)'
-                        }}
-                    >
-                        {remainingTodos} remaining
-                    </motion.span>
-                </motion.h3>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                        <TrendingUp size={20} />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-foreground leading-tight">Tasks</h3>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>{completedCount}/{totalCount} done</span>
+                            <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                                <motion.div 
+                                    className="h-full bg-primary rounded-full"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${progress}%` }}
+                                    transition={{ duration: 1, ease: "easeOut" }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <AnimatePresence>
                     {remainingTodos === 0 && todos.length > 0 && (
                         <motion.div
-                            initial={{ scale: 0, rotate: -180 }}
+                            initial={{ scale: 0, rotate: -20 }}
                             animate={{ scale: 1, rotate: 0 }}
-                            exit={{ scale: 0, rotate: 180 }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/20 border border-green-500/30 hover:bg-green-500/30 transition-colors"
-                            whileHover={{ 
-                                scale: 1.05,
-                                boxShadow: '0 0 20px rgba(34, 197, 94, 0.3)'
-                            }}
+                            exit={{ scale: 0 }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/20 border border-green-500/30 text-green-500 font-bold text-xs shadow-lg shadow-green-500/10"
                         >
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                            >
-                                <Sparkles className="text-green-400" size={14} />
-                            </motion.div>
-                            <span className="text-xs font-semibold text-green-400">All done!</span>
+                            <Trophy size={14} className="fill-current" />
+                            <span>All Done!</span>
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </motion.div>
+            </div>
 
-            {/* Enhanced Add Task Form */}
-            <motion.form 
-                onSubmit={handleSubmit} 
-                className="relative mb-6"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-            >
-                <motion.div
-                    className="relative"
-                    whileFocus={{ scale: 1.02 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                    <input
-                        type="text"
-                        value={newItem}
-                        onChange={(e) => setNewItem(e.target.value)}
-                        onFocus={() => setIsInputFocused(true)}
-                        onBlur={() => setIsInputFocused(false)}
-                        placeholder="Add a new task..."
-                        disabled={isSaving}
-                        className={`w-full bg-black/5 dark:bg-black/20 border rounded-xl px-4 py-3 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-none transition-all duration-300 font-medium disabled:opacity-50 ${
-                            isInputFocused 
-                                ? 'border-primary/50 ring-2 ring-primary/20 bg-primary/5 dark:bg-primary/10' 
-                                : 'border-black/5 dark:border-white/10 hover:border-primary/20'
-                        }`}
-                    />
-                    
-                    {/* Animated border glow */}
-                    {isInputFocused && (
-                        <motion.div
-                            className="absolute inset-0 rounded-xl border-2 border-primary/30 pointer-events-none"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: [0, 1, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity }}
-                        />
-                    )}
-                </motion.div>
-                
-                <motion.button
-                    type="submit"
-                    disabled={!newItem.trim() || isSaving}
-                    className={`absolute right-2 top-2 p-2 rounded-lg transition-all duration-300 ${
-                        newItem.trim() && !isSaving
-                            ? 'bg-gradient-to-br from-primary to-purple-600 text-white hover:shadow-lg hover:shadow-primary/30'
-                            : 'bg-muted text-muted-foreground cursor-not-allowed'
-                    }`}
-                    whileHover={{ 
-                        scale: newItem.trim() && !isSaving ? 1.1 : 1,
-                        rotate: newItem.trim() && !isSaving ? 5 : 0
-                    }}
-                    whileTap={{ scale: newItem.trim() && !isSaving ? 0.9 : 1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
-                    {isSaving ? (
-                        <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        >
-                            <RefreshCw size={18} />
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            whileHover={{ rotate: 90 }}
-                            transition={{ type: "spring", stiffness: 300 }}
-                        >
-                            <Plus size={18} />
-                        </motion.div>
-                    )}
-                </motion.button>
-            </motion.form>
+            {/* Add Input */}
+            <TodoInput onAdd={addTodo} isSaving={isSaving} />
 
-            {/* Enhanced Error State */}
+            {/* Filters */}
+            {todos.length > 0 && (
+                <TodoFilters filter={filter} onFilterChange={setFilter} />
+            )}
+
+            {/* Error State */}
             <AnimatePresence>
                 {lastError && (
                     <motion.div
-                        initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                        className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
-                        whileHover={{ scale: 1.02 }}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mb-4 overflow-hidden"
                     >
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-red-700 dark:text-red-400">
-                                <motion.div
-                                    animate={{ rotate: [0, 10, -10, 0] }}
-                                    transition={{ duration: 1, repeat: Infinity }}
-                                >
-                                    <AlertCircle size={16} />
-                                </motion.div>
-                                <span className="text-sm font-medium">Error</span>
+                        <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-destructive text-sm font-medium">
+                                <AlertCircle size={16} />
+                                <span>{lastError}</span>
                             </div>
                             <RetryOperation isRetrying={isSaving} onRetry={retryLastOperation} />
                         </div>
-                        <motion.p 
-                            className="text-sm text-red-600 dark:text-red-300 mt-1"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.1 }}
-                        >
-                            {lastError}
-                        </motion.p>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Enhanced Todo List */}
-            <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2 custom-scrollbar">
-                <AnimatePresence mode="popLayout">
-                    {sortedTodos.map((todo, index) => (
-                        <motion.div
-                            key={todo.id}
-                            layout
-                            initial={{ opacity: 0, x: -30, scale: 0.9 }}
-                            animate={{ opacity: 1, x: 0, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9, x: 30 }}
-                            transition={{
-                                duration: 0.3,
-                                ease: 'easeOut',
-                                delay: index * 0.03,
-                                type: "spring",
-                                stiffness: 100,
-                                damping: 15
-                            }}
-                            whileHover={{ 
-                                x: 4,
-                                transition: { type: "spring", stiffness: 300, damping: 20 }
-                            }}
-                            className={`group/item flex items-center gap-3 p-3 rounded-xl transition-all duration-300 border ${
-                                todo.completed
-                                    ? 'bg-black/5 dark:bg-white/5 border-transparent opacity-60'
-                                    : 'bg-white/40 dark:bg-white/10 border-black/5 dark:border-white/5 hover:bg-white/60 dark:hover:bg-white/15 hover:border-primary/20'
-                            }`}
-                        >
-                            <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => toggleTodo(todo.id)}
-                                className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-                                    todo.completed
-                                        ? 'bg-green-500 border-green-500 text-white'
-                                        : 'border-muted-foreground/30 hover:border-muted-foreground/50 text-transparent hover:border-primary/50'
-                                }`}
-                            >
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: todo.completed ? 1 : 0 }}
-                                    transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                                >
-                                    <Check size={14} strokeWidth={3} />
-                                </motion.div>
-                            </motion.button>
-
-                            <motion.span 
-                                className={`flex-1 font-medium transition-all duration-300 ${
-                                    todo.completed ? 'text-muted-foreground line-through' : 'text-foreground'
-                                }`}
-                                layout
-                            >
-                                {todo.text}
-                            </motion.span>
-
-                            <motion.button
-                                whileHover={{ 
-                                    scale: 1.1,
-                                    x: 0,
-                                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                                    color: 'rgb(239, 68, 68)'
-                                }}
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => deleteTodo(todo.id)}
-                                className="opacity-0 group-hover/item:opacity-100 p-1.5 text-red-400 hover:bg-red-400/20 rounded-lg transition-all duration-300"
-                                initial={{ x: 10 }}
-                            >
-                                <motion.div
-                                    whileHover={{ rotate: 90 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
-                                >
-                                    <Trash2 size={16} />
-                                </motion.div>
-                            </motion.button>
-                        </motion.div>
-                    ))}
-
-                    <AnimatePresence>
-                        {todos.length === 0 && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: -20, scale: 0.9 }}
-                                className="glass-card p-6 rounded-xl flex flex-col items-center justify-center text-center border-dashed border-border"
-                            >
-                                <motion.div 
-                                    className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-3"
-                                    whileHover={{ 
-                                        scale: 1.1,
-                                        rotate: 5,
-                                        backgroundColor: 'rgba(139, 47, 201, 0.3)'
-                                    }}
-                                    animate={{ 
-                                        y: [0, -5, 0],
-                                    }}
-                                    transition={{ 
-                                        y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-                                        rotate: { type: "spring", stiffness: 300 }
-                                    }}
-                                >
-                                    <motion.div
-                                        animate={{ rotate: 360 }}
-                                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                                    >
-                                        <Sparkles className="text-primary" size={24} />
-                                    </motion.div>
-                                </motion.div>
-                                <motion.h4 
-                                    className="font-semibold text-foreground mb-1"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.2 }}
-                                >
-                                    No tasks yet
-                                </motion.h4>
-                                <motion.p 
-                                    className="text-sm text-muted-foreground"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.3 }}
-                                >
-                                    Create tasks to stay organized and focused
-                                </motion.p>
-                            </motion.div>
-                        )}
+            {/* Todo List */}
+            <div className="space-y-1 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar min-h-[100px]">
+                {isLoading && todos.length === 0 ? (
+                    <TodoSkeleton />
+                ) : (
+                    <AnimatePresence mode="popLayout" initial={false}>
+                        {sortedTodos.map((todo, index) => (
+                            <AnimatedTodoItem 
+                                key={todo.id} 
+                                todo={todo} 
+                                index={index}
+                                onToggle={toggleTodo} 
+                                onDelete={deleteTodo} 
+                            />
+                        ))}
                     </AnimatePresence>
-                </AnimatePresence>
+                )}
+
+                {/* Empty States */}
+                {!isLoading && sortedTodos.length === 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground"
+                    >
+                        {filter === 'all' && todos.length === 0 ? (
+                            <>
+                                <motion.div 
+                                    className="mb-3 p-4 bg-muted/30 rounded-full"
+                                    animate={{ y: [0, -5, 0] }}
+                                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                >
+                                    <Sparkles size={24} className="text-primary/50" />
+                                </motion.div>
+                                <p className="font-medium text-foreground">No tasks yet</p>
+                                <p className="text-xs max-w-[200px] mt-1">Add a task to get started on your productivity journey!</p>
+                            </>
+                        ) : (
+                            <>
+                                <p className="font-medium text-foreground">No {filter} tasks</p>
+                                <p className="text-xs mt-1">Change the filter to see more tasks.</p>
+                            </>
+                        )}
+                    </motion.div>
+                )}
             </div>
         </motion.div>
     );
