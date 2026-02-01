@@ -792,6 +792,349 @@
     background-size: 200% 200%;
     animation: gradient-shimmer 3s ease infinite;
   }
+
+  /* WeekView & Timetable Animations */
+  @keyframes day-select {
+    0% {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .day-selected {
+    animation: day-select 0.3s var(--ease-spring);
+  }
+
+  @keyframes time-line-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(139, 47, 201, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 4px rgba(139, 47, 201, 0);
+    }
+  }
+
+  .time-now {
+    animation: time-line-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes class-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px -5px rgba(139, 47, 201, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px -5px rgba(139, 47, 201, 0.6);
+    }
+  }
+
+  .class-glow {
+    animation: class-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes number-flip-date {
+    0% {
+      transform: rotateX(0deg);
+    }
+    50% {
+      transform: rotateX(90deg);
+      opacity: 0.5;
+    }
+    100% {
+      transform: rotateX(0deg);
+      opacity: 1;
+    }
+  }
+
+  .date-number-flip {
+    animation: number-flip-date 0.4s var(--ease-out);
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
+
+  @keyframes slide-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-10px);
+    }
+  }
+
+  @keyframes breathe-background {
+    0%, 100% {
+      background-position: 0% 50%;
+      opacity: 1;
+    }
+    50% {
+      background-position: 100% 50%;
+      opacity: 0.8;
+    }
+  }
+
+  .breathing-bg {
+    animation: breathe-background 4s ease-in-out infinite;
+    background-size: 200% 200%;
+  }
+
+  @keyframes badge-pulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(139, 47, 201, 0.4);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 8px rgba(139, 47, 201, 0);
+    }
+  }
+
+  .badge-pulse {
+    animation: badge-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes drag-shadow {
+    0%, 100% {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .drag-active {
+    animation: drag-shadow 0.3s ease-in-out infinite;
+  }
+
+  /* Day pill styles */
+  .day-pill {
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-normal) var(--timing-ease-out);
+  }
+
+  .day-pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.2), hsl(var(--secondary) / 0.2));
+    opacity: 0;
+    transition: opacity var(--transition-normal) var(--timing-ease-out);
+  }
+
+  .day-pill:hover::before {
+    opacity: 1;
+  }
+
+  .day-pill.active::before {
+    opacity: 1;
+  }
+
+  .day-pill-glow {
+    position: absolute;
+    inset: -2px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    opacity: 0;
+    filter: blur(8px);
+    transition: opacity var(--transition-normal) var(--timing-ease-out);
+    z-index: -1;
+  }
+
+  .day-pill:hover .day-pill-glow,
+  .day-pill.active .day-pill-glow {
+    opacity: 0.6;
+  }
+
+  /* Class status gradients */
+  .class-gradient-primary {
+    background: linear-gradient(135deg, rgba(139, 47, 201, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+  }
+
+  .class-gradient-secondary {
+    background: linear-gradient(135deg, rgba(0, 217, 249, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+  }
+
+  .class-gradient-accent {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(244, 114, 182, 0.1) 100%);
+  }
+
+  .class-gradient-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.1) 100%);
+  }
+
+  .class-current {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 20px -5px rgba(139, 47, 201, 0.4);
+  }
+
+  /* Empty time slot styles */
+  .empty-slot {
+    position: relative;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      hsl(var(--border) / 0.2) 10px,
+      hsl(var(--border) / 0.2) 20px
+    );
+    transition: all var(--transition-normal) var(--timing-ease-out);
+  }
+
+  .empty-slot:hover {
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      hsl(var(--primary) / 0.1) 10px,
+      hsl(var(--primary) / 0.1) 20px
+    );
+  }
+
+  /* Break block styles */
+  .break-style {
+    background: linear-gradient(135deg, hsl(var(--muted) / 0.3) 0%, hsl(var(--muted) / 0.1) 100%);
+    border-left: 3px solid hsl(var(--muted));
+    position: relative;
+    overflow: hidden;
+  }
+
+  .break-style::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--muted)), transparent);
+    animation: slide-scroll 2s linear infinite;
+  }
+
+  /* Week overview mini cards */
+  .week-overview-card {
+    transition: all var(--transition-normal) var(--timing-ease-out);
+  }
+
+  .week-overview-card:hover {
+    transform: scale(1.05);
+  }
+
+  .week-overview-dot {
+    transition: all var(--transition-fast) var(--timing-ease-out);
+  }
+
+  .week-overview-dot.free {
+    background: hsl(142 76% 36%);
+  }
+
+  .week-overview-dot.partial {
+    background: hsl(45 93% 47%);
+  }
+
+  .week-overview-dot.full {
+    background: hsl(0 84% 60%);
+  }
+
+  /* Progress arc */
+  .progress-arc {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
+
+  /* Live indicator enhancements */
+  .live-now-indicator {
+    position: relative;
+  }
+
+  .live-now-indicator::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    z-index: -1;
+    opacity: 0;
+    animation: badge-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Quick add button hover */
+  .quick-add-reveal {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all var(--transition-normal) var(--timing-ease-out);
+  }
+
+  .empty-slot:hover .quick-add-reveal {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Time slot hover preview */
+  .time-slot-preview {
+    position: absolute;
+    inset: 0;
+    background: hsl(var(--primary) / 0.1);
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast) var(--timing-ease-out);
+  }
+
+  .time-slot:hover .time-slot-preview {
+    opacity: 1;
+  }
+
+  /* Smooth day transition */
+  .day-transition {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Animated border glow */
+  .animated-border-glow {
+    position: relative;
+  }
+
+  .animated-border-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)));
+    background-size: 200% 100%;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity var(--transition-normal) var(--timing-ease-out);
+    animation: gradient-shimmer 3s linear infinite;
+  }
+
+  .animated-border-glow:hover::before,
+  .animated-border-glow.active::before {
+    opacity: 1;
+  }
+
+  /* Class count badge colors */
+  .count-badge-no-class {
+    background: hsl(142 76% 36% / 0.2);
+    color: hsl(142 76% 36%);
+    border: 1px solid hsl(142 76% 36% / 0.3);
+  }
+
+  .count-badge-normal {
+    background: hsl(45 93% 47% / 0.2);
+    color: hsl(45 93% 47%);
+    border: 1px solid hsl(45 93% 47% / 0.3);
+  }
+
+  .count-badge-busy {
+    background: hsl(0 84% 60% / 0.2);
+    color: hsl(0 84% 60%);
+    border: 1px solid hsl(0 84% 60% / 0.3);
+  }
 }
 
 /* Custom Scrollbar Global */
