@@ -5,7 +5,7 @@ import { Sparkles, AlertCircle, TrendingUp, Trophy } from 'lucide-react';
 import { RetryOperation } from './ErrorBoundary';
 import { AnimatedTodoItem } from './todo/AnimatedTodoItem';
 import { TodoInput } from './todo/TodoInput';
-import { TodoFilters, TodoFilterType } from './todo/TodoFilters';
+import { TodoFilters, type TodoFilterType } from './todo/TodoFilters';
 import { TodoSkeleton } from './todo/TodoSkeleton';
 import { ConfettiExplosion } from './ConfettiExplosion';
 

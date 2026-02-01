@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion, useMotionValue, useTransform, useAnimation, PanInfo } from 'framer-motion';
-import { TodoItem } from '../../types';
+import { motion, useMotionValue, useTransform, useAnimation, type PanInfo } from 'framer-motion';
+import type { TodoItem } from '../../types';
 import { TodoCheckbox } from './TodoCheckbox';
 import { Trash2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
