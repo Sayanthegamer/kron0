@@ -90,7 +90,83 @@
   * {
     transition: background-color var(--transition-normal) var(--timing-ease-out),
                 border-color var(--transition-normal) var(--timing-ease-out),
-                color var(--transition-normal) var(--timing-ease-out);
+                color var(--transition-normal) var(--timing-ease-out),
+                box-shadow var(--transition-normal) var(--timing-ease-out),
+                transform var(--transition-normal) var(--timing-ease-out);
+  }
+
+  /* Modal & Dialog Keyframes */
+  @keyframes modal-slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes modal-scale {
+    from {
+      transform: scale(0.9) translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes backdrop-blur {
+    from {
+      backdrop-filter: blur(0);
+      background-color: transparent;
+    }
+    to {
+      backdrop-filter: blur(8px);
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  /* Form & Interaction Keyframes */
+  @keyframes field-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  @keyframes label-float {
+    from {
+      transform: translateY(0) scale(1);
+      opacity: 0.5;
+    }
+    to {
+      transform: translateY(-20px) scale(0.85);
+      opacity: 1;
+    }
+  }
+
+  @keyframes toggle-slide {
+    from { transform: translateX(0); }
+    to { transform: translateX(100%); }
+  }
+
+  @keyframes menu-slide-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @keyframes color-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(var(--primary), 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(var(--primary), 0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--primary), 0); }
   }
 
   /* Reduced motion support */
@@ -740,6 +816,38 @@
 
   .class-card-gradient-secondary {
     background: linear-gradient(135deg, rgba(0, 217, 249, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  }
+
+  /* Overhaul Utilities */
+  .modal-backdrop {
+    @apply fixed inset-0 z-[200];
+    animation: backdrop-blur 0.3s forwards var(--ease-out);
+  }
+
+  .form-input-focus {
+    @apply focus:ring-2 focus:ring-primary/20 focus:border-primary;
+    box-shadow: 0 0 15px rgba(139, 47, 201, 0.1);
+  }
+
+  .error-field {
+    @apply border-red-500 focus:ring-red-500/20 focus:border-red-500;
+    animation: field-shake 0.4s var(--ease-in-out);
+  }
+
+  .toggle-enabled {
+    @apply bg-primary;
+    box-shadow: 0 0 15px rgba(139, 47, 201, 0.3);
+  }
+
+  .button-loading {
+    @apply opacity-70 cursor-not-allowed;
+    background-size: 200% 200%;
+    animation: gradient-shimmer 2s linear infinite;
+  }
+
+  .menu-item-hover {
+    @apply bg-muted/80 backdrop-blur-sm;
+    transform: translateX(4px);
   }
 
   /* Stagger animation utility */
