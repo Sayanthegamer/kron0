@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import type { TimeTableEntry, DayOfWeek } from '../types';
-import { X, Trash2, AlertCircle } from 'lucide-react';
+import { Trash2, Calendar, Clock, MapPin, Type, Save } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTimetable } from '../hooks/useTimetable';
+import { AnimatedModal, FormInput, ColorPicker, DateTimePicker, AnimatedTooltip } from './ui';
 
 interface EntryModalProps {
     isOpen: boolean;
@@ -135,236 +135,162 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
     const hasError = (name: string) => touched[name] && errors[name];
     const errorBorder = (name: string) => hasError(name) ? 'border-red-400 focus:ring-red-400/20' : 'focus:border-primary focus:ring-primary/20';
 
-    return createPortal(
-        <AnimatePresence>
-            {isOpen && (
-                <>
-                    {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2, ease: 'easeOut' }}
-                        onClick={onClose}
-                        className="fixed inset-0 bg-black/60 z-[200] backdrop-blur-sm"
+    return (
+        <AnimatedModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={initialData ? 'Edit Class' : 'Add New Class'}
+        >
+            <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Subject */}
+                <div className="space-y-1">
+                    <FormInput
+                        id="subject"
+                        label="Subject Name"
+                        value={formData.subject}
+                        onChange={e => handleChange('subject', e.target.value)}
+                        onBlur={() => handleBlur('subject', formData.subject)}
+                        error={errors.subject}
+                        touched={touched.subject}
+                        placeholder="e.g. Advanced Mathematics"
+                        autoComplete="off"
                     />
+                </div>
 
-                    {/* Sheet */}
-                    <motion.div
-                        initial={{ y: "100%" }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "100%" }}
-                        transition={{ type: "tween", ease: "circOut", duration: 0.3 }}
-                        className="fixed bottom-0 left-0 right-0 bg-card z-[201] rounded-t-2xl p-6 shadow-2xl max-w-md mx-auto max-h-[90vh] overflow-y-auto will-change-transform"
-                    >
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-foreground">{initialData ? 'Edit Class' : 'Add Class'}</h2>
-                            <button
-                                onClick={onClose}
-                                className="p-2 rounded-full hover:bg-muted transition-smooth"
-                            >
-                                <X size={20} className="text-muted-foreground" />
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* Subject */}
-                            <div>
-                                <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-1.5">Subject</label>
-                                <input
-                                    id="subject"
-                                    type="text"
-                                    value={formData.subject}
-                                    onChange={e => handleChange('subject', e.target.value)}
-                                    onBlur={() => handleBlur('subject', formData.subject)}
-                                    className={`w-full p-3 rounded-lg bg-muted border transition-smooth outline-none focus:ring-2 ${errorBorder('subject')}`}
-                                    placeholder="e.g. Mathematics"
-                                />
-                                <AnimatePresence>
-                                    {hasError('subject') && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -5 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -5 }}
-                                            className="flex items-center gap-1.5 mt-1.5 text-xs text-red-400"
-                                        >
-                                            <AlertCircle size={12} />
-                                            <span>{errors.subject}</span>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-
-                            {/* Days */}
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">Repeats On</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {DAYS.map(day => {
-                                        const isSelected = formData.days?.includes(day);
-                                        const hasDayError = hasError('days') && !isSelected;
-                                        return (
-                                            <button
-                                                key={day}
-                                                type="button"
-                                                onClick={() => toggleDay(day)}
-                                                className={`px-3 py-2 text-xs rounded-full font-semibold transition-smooth border ${
-                                                    isSelected
-                                                        ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25'
-                                                        : 'bg-muted text-muted-foreground border-transparent hover:border-border'
-                                                } ${hasDayError ? 'border-red-400' : ''}`}
-                                            >
-                                                {day.slice(0, 3)}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                                <AnimatePresence>
-                                    {hasError('days') && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -5 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -5 }}
-                                            className="flex items-center gap-1.5 mt-1.5 text-xs text-red-400"
-                                        >
-                                            <AlertCircle size={12} />
-                                            <span>{errors.days}</span>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-
-                            {/* Color */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="color" className="block text-sm font-medium text-foreground mb-1.5">Color</label>
-                                    <input
-                                        id="color"
-                                        type="color"
-                                        value={formData.color}
-                                        onChange={e => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                                        className="w-full h-[46px] p-1 rounded-lg bg-muted cursor-pointer transition-smooth"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Time */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="startTime" className="block text-sm font-medium text-foreground mb-1.5">Start Time</label>
-                                    <input
-                                        id="startTime"
-                                        type="time"
-                                        value={formData.startTime}
-                                        onChange={e => {
-                                            handleChange('startTime', e.target.value);
-                                            if (errors.endTime) {
-                                                const endError = validateField('endTime', formData.endTime);
-                                                setErrors(prev => ({ ...prev, endTime: endError }));
-                                            }
-                                        }}
-                                        onBlur={() => handleBlur('startTime', formData.startTime)}
-                                        className={`w-full p-3 rounded-lg bg-muted border transition-smooth outline-none focus:ring-2 ${errorBorder('startTime')}`}
-                                    />
-                                    <AnimatePresence>
-                                        {hasError('startTime') && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: -5 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -5 }}
-                                                className="flex items-center gap-1.5 mt-1.5 text-xs text-red-400"
-                                            >
-                                                <AlertCircle size={12} />
-                                                <span>{errors.startTime}</span>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                                <div>
-                                    <label htmlFor="endTime" className="block text-sm font-medium text-foreground mb-1.5">End Time</label>
-                                    <input
-                                        id="endTime"
-                                        type="time"
-                                        value={formData.endTime}
-                                        onChange={e => handleChange('endTime', e.target.value)}
-                                        onBlur={() => handleBlur('endTime', formData.endTime)}
-                                        className={`w-full p-3 rounded-lg bg-muted border transition-smooth outline-none focus:ring-2 ${errorBorder('endTime')}`}
-                                    />
-                                    <AnimatePresence>
-                                        {hasError('endTime') && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: -5 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -5 }}
-                                                className="flex items-center gap-1.5 mt-1.5 text-xs text-red-400"
-                                            >
-                                                <AlertCircle size={12} />
-                                                <span>{errors.endTime}</span>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            </div>
-
-                            {/* Location */}
-                            <div>
-                                <label htmlFor="location" className="block text-sm font-medium text-foreground mb-1.5">Location (Optional)</label>
-                                <input
-                                    id="location"
-                                    type="text"
-                                    value={formData.location}
-                                    onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                                    className="w-full p-3 rounded-lg bg-muted border border-border transition-smooth outline-none focus:ring-2 focus:border-primary focus:ring-primary/20"
-                                    placeholder="e.g. Room 101"
-                                />
-                            </div>
-
-                            {/* Actions */}
-                            <div className="pt-4 flex gap-3">
-                                {initialData && onDelete && (
-                                    <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        type="button"
-                                        disabled={isSaving}
-                                        onClick={async () => { 
-                                            try {
-                                                await onDelete(initialData.id!); 
-                                                onClose();
-                                            } catch (error) {
-                                                console.error('Delete failed:', error);
-                                            }
-                                        }}
-                                        className={`p-4 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-smooth ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    >
-                                        {isSaving ? (
-                                            <div className="w-5 h-5 border-2 border-destructive border-t-transparent rounded-full animate-spin" />
-                                        ) : (
-                                            <Trash2 size={20} />
-                                        )}
-                                    </motion.button>
-                                )}
+                {/* Days Selection */}
+                <div className="space-y-3">
+                    <label className="text-sm font-medium text-muted-foreground ml-1 flex items-center gap-2">
+                        <Calendar size={16} />
+                        Repeat on
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                        {DAYS.map((day, idx) => {
+                            const isSelected = formData.days?.includes(day);
+                            return (
                                 <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    type="submit"
-                                    disabled={isSaving}
-                                    className={`flex-1 p-4 rounded-xl bg-gradient-to-r from-primary to-purple-600 text-primary-foreground font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-smooth ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    key={day}
+                                    type="button"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => toggleDay(day)}
+                                    className={`
+                                        px-3 py-2 rounded-xl text-xs font-bold transition-all duration-300 border
+                                        ${isSelected 
+                                            ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105' 
+                                            : 'bg-muted/50 text-muted-foreground border-border/50 hover:border-primary/50'}
+                                    `}
                                 >
-                                    {isSaving ? (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                                            {initialData ? 'Saving...' : 'Creating...'}
-                                        </div>
-                                    ) : (
-                                        initialData ? 'Save Changes' : 'Create Class'
-                                    )}
+                                    {day.slice(0, 3)}
                                 </motion.button>
-                            </div>
-                        </form>
-                    </motion.div>
-                </>
-            )}
-        </AnimatePresence>,
-        document.body
+                            );
+                        })}
+                    </div>
+                    <AnimatePresence>
+                        {touched.days && errors.days && (
+                            <motion.p
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="text-xs text-red-500 pl-1"
+                            >
+                                {errors.days}
+                            </motion.p>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Time Selection */}
+                <div className="grid grid-cols-2 gap-4">
+                    <DateTimePicker
+                        label="Start Time"
+                        type="time"
+                        value={formData.startTime || ''}
+                        onChange={val => handleChange('startTime', val)}
+                        error={errors.startTime}
+                        touched={touched.startTime}
+                    />
+                    <DateTimePicker
+                        label="End Time"
+                        type="time"
+                        value={formData.endTime || ''}
+                        onChange={val => handleChange('endTime', val)}
+                        error={errors.endTime}
+                        touched={touched.endTime}
+                    />
+                </div>
+
+                {/* Location */}
+                <FormInput
+                    id="location"
+                    label="Location"
+                    value={formData.location}
+                    onChange={e => handleChange('location', e.target.value)}
+                    placeholder="e.g. Room 302, Building B"
+                    autoComplete="off"
+                />
+
+                {/* Color Picker */}
+                <ColorPicker
+                    label="Theme Color"
+                    value={formData.color || '#3b82f6'}
+                    onChange={color => handleChange('color', color)}
+                />
+
+                {/* Actions */}
+                <div className="pt-4 flex gap-3">
+                    {initialData && onDelete && (
+                        <AnimatedTooltip content="Permanently delete this class">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                type="button"
+                                disabled={isSaving}
+                                onClick={async () => { 
+                                    try {
+                                        await onDelete(initialData.id!); 
+                                        onClose();
+                                    } catch (error) {
+                                        console.error('Delete failed:', error);
+                                    }
+                                }}
+                                className="p-4 rounded-2xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all duration-300 flex items-center justify-center min-w-[60px]"
+                            >
+                                {isSaving ? (
+                                    <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                    <Trash2 size={20} />
+                                )}
+                            </motion.button>
+                        </AnimatedTooltip>
+                    )}
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="submit"
+                        disabled={isSaving}
+                        className={`
+                            flex-1 p-4 rounded-2xl bg-primary text-primary-foreground font-bold shadow-xl shadow-primary/20 
+                            hover:shadow-primary/40 transition-all duration-300 flex items-center justify-center gap-2
+                            ${isSaving ? 'button-loading' : ''}
+                        `}
+                    >
+                        {isSaving ? (
+                            <>
+                                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                                <span>Processing...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Save size={20} />
+                                <span>{initialData ? 'Update Class' : 'Create Class'}</span>
+                            </>
+                        )}
+                    </motion.button>
+                </div>
+            </form>
+        </AnimatedModal>
     );
 };

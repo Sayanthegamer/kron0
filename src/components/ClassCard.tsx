@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import type { TimeTableEntry } from '../types';
-import { MapPin, Clock, Pencil, Sparkles } from 'lucide-react';
+import { MapPin, Clock, Pencil, Sparkles, Trash2, Copy, Calendar } from 'lucide-react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { twMerge } from 'tailwind-merge';
+import { ContextMenu } from './ui';
 
 interface ClassCardProps {
     entry: TimeTableEntry;
@@ -103,47 +104,53 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ 
-                opacity: 1, 
-                y: 0, 
-                scale: 1,
-                rotate: isPressed ? -1 : 0
-            }}
-            whileHover={{ 
-                scale: status === 'past' ? 1 : 1.02,
-                y: status === 'past' ? 0 : -4,
-                transition: { type: "spring", stiffness: 400, damping: 17 }
-            }}
-            whileTap={{ 
-                scale: 0.98,
-                transition: { type: "spring", stiffness: 400, damping: 17 }
-            }}
-            onClick={() => {
-                setIsPressed(true);
-                setTimeout(() => setIsPressed(false), 150);
-                onClick();
-            }}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={handleMouseLeave}
-            className={twMerge(
-                "relative overflow-hidden rounded-xl p-5 border backdrop-blur-md transition-all duration-300 cursor-pointer group",
-                "glass-card hover:bg-black/5 dark:hover:bg-white/10 hover-lift focus-ring",
-                borderColor,
-                glow,
-                status === 'past' && 'grayscale-[0.5] opacity-75'
-            )}
-            style={{ 
-                willChange: 'transform',
-                rotateX: status === 'past' ? 0 : rotateX,
-                rotateY: status === 'past' ? 0 : rotateY,
-                transformStyle: 'preserve-3d',
-                perspective: 1000
-            }}
-        >
-            {/* Animated Background Gradient */}
+        <ContextMenu items={[
+            { label: 'Edit Class', icon: Pencil, onClick: onClick },
+            { label: 'Duplicate', icon: Copy, onClick: () => console.log('Duplicate', entry.id) },
+            { label: 'View Schedule', icon: Calendar, onClick: () => console.log('Schedule', entry.id) },
+            { label: 'Delete', icon: Trash2, onClick: () => console.log('Delete', entry.id), destructive: true },
+        ]}>
+            <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ 
+                    opacity: 1, 
+                    y: 0, 
+                    scale: 1,
+                    rotate: isPressed ? -1 : 0
+                }}
+                whileHover={{ 
+                    scale: status === 'past' ? 1 : 1.02,
+                    y: status === 'past' ? 0 : -4,
+                    transition: { type: "spring", stiffness: 400, damping: 17 }
+                }}
+                whileTap={{ 
+                    scale: 0.98,
+                    transition: { type: "spring", stiffness: 400, damping: 17 }
+                }}
+                onClick={() => {
+                    setIsPressed(true);
+                    setTimeout(() => setIsPressed(false), 150);
+                    onClick();
+                }}
+                onMouseMove={handleMouseMove}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={handleMouseLeave}
+                className={twMerge(
+                    "relative overflow-hidden rounded-xl p-5 border backdrop-blur-md transition-all duration-300 cursor-pointer group",
+                    "glass-card hover:bg-black/5 dark:hover:bg-white/10 hover-lift focus-ring",
+                    borderColor,
+                    glow,
+                    status === 'past' && 'grayscale-[0.5] opacity-75'
+                )}
+                style={{ 
+                    willChange: 'transform',
+                    rotateX: status === 'past' ? 0 : rotateX,
+                    rotateY: status === 'past' ? 0 : rotateY,
+                    transformStyle: 'preserve-3d',
+                    perspective: 1000
+                }}
+            >
+                {/* Animated Background Gradient */}
             <motion.div
                 className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
                 initial={false}
@@ -314,5 +321,6 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
                 />
             )}
         </motion.div>
+        </ContextMenu>
     );
 };
