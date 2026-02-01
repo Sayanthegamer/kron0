@@ -17,6 +17,7 @@ const DAYS: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday
 export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) => {
     const { entries } = useTimetable();
     const [selectedDay, setSelectedDay] = React.useState<DayOfWeek>('Monday');
+    const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
     const [previousDay, setPreviousDay] = useState<DayOfWeek | null>(null);
     const [showWeekOverview, setShowWeekOverview] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -35,7 +36,7 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
     // Trigger date flip animation when day changes
     useEffect(() => {
         setDateKey(prev => prev + 1);
-    }, [selectedDay]);
+    }, [selectedDay, currentWeekStart]);
 
     const checkScroll = useCallback(() => {
         if (scrollRef.current) {
@@ -61,34 +62,45 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
         };
     }, [checkScroll]);
 
-    // Get date for selected day
+    // Get date for selected day based on current week start
     const getDayDate = (day: DayOfWeek) => {
-        const today = new Date();
         const dayIndex = DAYS.indexOf(day);
-        const todayIndex = DAYS.indexOf(format(today, 'EEEE') as DayOfWeek);
-        const diff = dayIndex - todayIndex;
-        return addDays(today, diff);
+        return addDays(currentWeekStart, dayIndex);
     };
 
     // Quick select functions
     const selectToday = () => {
-        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }) as DayOfWeek;
-        if (DAYS.includes(today)) {
-            setSelectedDay(today);
+        const today = new Date();
+        const dayName = format(today, 'EEEE') as DayOfWeek;
+        setCurrentWeekStart(startOfWeek(today, { weekStartsOn: 1 }));
+        if (DAYS.includes(dayName)) {
+            setSelectedDay(dayName);
         }
     };
 
     const selectYesterday = () => {
-        const yesterday = addDays(new Date(), -1);
+        // Calculate the actual date of the currently selected day
+        const currentSelectedDate = getDayDate(selectedDay);
+        const yesterday = addDays(currentSelectedDate, -1);
         const dayName = format(yesterday, 'EEEE') as DayOfWeek;
+
+        // Update week start if we moved to previous week
+        setCurrentWeekStart(startOfWeek(yesterday, { weekStartsOn: 1 }));
+
         if (DAYS.includes(dayName)) {
             setSelectedDay(dayName);
         }
     };
 
     const selectTomorrow = () => {
-        const tomorrow = addDays(new Date(), 1);
+        // Calculate the actual date of the currently selected day
+        const currentSelectedDate = getDayDate(selectedDay);
+        const tomorrow = addDays(currentSelectedDate, 1);
         const dayName = format(tomorrow, 'EEEE') as DayOfWeek;
+
+        // Update week start if we moved to next week
+        setCurrentWeekStart(startOfWeek(tomorrow, { weekStartsOn: 1 }));
+
         if (DAYS.includes(dayName)) {
             setSelectedDay(dayName);
         }
@@ -288,11 +300,11 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
                             >
                                 <div className="day-pill-glow" />
                                 <div className="flex flex-col items-center gap-0.5 relative z-10">
-                                    <span className="text-xs opacity-70 uppercase tracking-wide">
+                                    <span className={`text-xs uppercase tracking-wide ${isSelected ? 'opacity-90 text-white' : 'opacity-70'}`}>
                                         {day.slice(0, 3)}
                                     </span>
                                     <motion.span
-                                        className={`text-xl font-bold ${isSelected ? 'text-primary' : ''}`}
+                                        className={`text-xl font-bold ${isSelected ? 'text-white' : ''}`}
                                         animate={{
                                             scale: isSelected ? [1, 1.1, 1] : 1
                                         }}
