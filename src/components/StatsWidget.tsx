@@ -115,15 +115,20 @@ export const StatsWidget: React.FC = () => {
     };
 
     return (
-        <div className="glass-card p-6 rounded-xl relative overflow-hidden">
+        <div className="glass-card p-5 md:p-6 rounded-2xl relative overflow-hidden hover-lift transition-smooth">
             {/* Header */}
-            <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <PieChart className="text-secondary" />
-                <span>Productivity Stats</span>
-            </h3>
+            <div className="mb-5">
+                <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                    <PieChart className="text-secondary" />
+                    <span>Productivity Stats</span>
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                    A quick snapshot of your focus and class time.
+                </p>
+            </div>
 
             {/* Today's Quick Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 {/* Focus Time */}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}

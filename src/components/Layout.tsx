@@ -274,7 +274,11 @@ const NavButton: React.FC<NavButtonProps> = ({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{
+                delay: 0.1,
+                duration: isMobile ? 0.25 : 0.35,
+                ease: 'easeOut'
+            }}
             className="relative"
         >
             <button
@@ -283,6 +287,7 @@ const NavButton: React.FC<NavButtonProps> = ({
                 onClick={handleRipple}
                 onMouseEnter={onHover}
                 onMouseLeave={onLeave}
+                aria-label={label}
                 className={`relative p-3 rounded-xl transition-all duration-300 group flex items-center justify-center focus-ring ${active ? 'text-white' : 'text-muted-foreground hover:text-white'
                     }`}
                 style={{ willChange: 'transform' }}
@@ -319,6 +324,15 @@ const NavButton: React.FC<NavButtonProps> = ({
                     >
                         {icon}
                     </motion.div>
+                    
+                    {/* Label under icon for clearer navigation, especially on mobile */}
+                    <span
+                        className={`mt-0.5 text-[10px] font-medium ${
+                            active ? 'text-white' : 'text-muted-foreground/80'
+                        }`}
+                    >
+                        {label}
+                    </span>
                     
                     {/* Badge counter */}
                     {badgeCount > 0 && (

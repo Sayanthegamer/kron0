@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { type FocusSession, type TimerMode } from '../types';
 import { MODES } from '../constants';
 import { db } from '../lib/firebase';
-import { collection, addDoc, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, addDoc, query, where, orderBy } from 'firebase/firestore';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
 import { FocusContext } from './definitions/FocusContextDefinition';
+import { listenToUserCollection } from '../lib/firestore';
 
 const HISTORY_COLLECTION = 'focus_history';
 
@@ -56,23 +57,37 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    // Load history
+    // Load history with real-time updates
     useEffect(() => {
-        if (!user) return;
-        const loadHistory = async () => {
-            try {
-                const q = query(collection(db, HISTORY_COLLECTION), where('userId', '==', user.uid), orderBy('startTime', 'desc'));
-                const snapshot = await getDocs(q);
-                setSessionHistory(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as FocusSession[]);
+        if (!user) {
+            setSessionHistory([]);
+            setLastError(null);
+            return;
+        }
+
+        let isMounted = true;
+
+        const unsubscribe = listenToUserCollection<FocusSession>({
+            collectionName: HISTORY_COLLECTION,
+            userId: user.uid,
+            mapFn: (raw) => raw as FocusSession,
+            constraints: [orderBy('startTime', 'desc')],
+            onData: (items) => {
+                if (!isMounted) return;
+                setSessionHistory(items);
                 setLastError(null);
-            } catch (error) {
-                const errorMessage = getErrorMessage(error);
-                logError(error, 'Load Focus History');
-                setLastError(errorMessage);
-                showError('Failed to load focus history', errorMessage);
+            },
+            onError: (message) => {
+                if (!isMounted) return;
+                setLastError(message);
+                showError('Failed to load focus history', message);
             }
+        });
+
+        return () => {
+            isMounted = false;
+            unsubscribe();
         };
-        loadHistory();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 

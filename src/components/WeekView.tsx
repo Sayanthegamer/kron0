@@ -169,45 +169,47 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
             <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center justify-between"
+                className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
             >
                 <button
                     onClick={() => setShowWeekOverview(!showWeekOverview)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors w-full sm:w-auto justify-between sm:justify-start"
                 >
-                    <Calendar size={16} className="text-primary" />
-                    <span className="text-sm font-medium">Week Overview</span>
+                    <div className="flex items-center gap-2">
+                        <Calendar size={16} className="text-primary" />
+                        <span className="text-sm font-medium">Week Overview</span>
+                    </div>
                     <motion.div
                         animate={{ rotate: showWeekOverview ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.25 }}
                     >
                         <ChevronRight size={14} />
                     </motion.div>
                 </button>
 
                 {/* Quick Select Buttons */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 justify-between sm:justify-end">
                     <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
                         onClick={selectYesterday}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                        className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                     >
                         Yesterday
                     </motion.button>
                     <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
                         onClick={selectToday}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
+                        className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
                     >
                         Today
                     </motion.button>
                     <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
                         onClick={selectTomorrow}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                        className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
                     >
                         Tomorrow
                     </motion.button>

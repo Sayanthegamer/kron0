@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import type { TodoItem } from '../types';
 import { db } from '../lib/firebase';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
 import { TodoContext } from './definitions/TodoContextDefinition';
+import { listenToUserCollection } from '../lib/firestore';
 
 const TODOS_COLLECTION = 'todos';
 
@@ -18,57 +19,45 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [lastError, setLastError] = useState<string | null>(null);
     const [lastFailedOperation, setLastFailedOperation] = useState<(() => Promise<void>) | null>(null);
 
-    // Load todos from Firestore scoped to current user
+    // Load todos from Firestore scoped to current user with real-time updates
     useEffect(() => {
         if (!user) {
+            setTodos([]);
             setIsLoading(false);
             return;
         }
 
         let isMounted = true;  // ✅ Prevent state updates after unmount
+        let hasLoaded = false;
 
-        const loadTodos = async () => {
-            try {
-                setIsLoading(true);  // ✅ Explicitly set loading true
-                setLastError(null);
+        setIsLoading(true);
+        setLastError(null);
 
-                const q = query(
-                    collection(db, TODOS_COLLECTION),
-                    where('userId', '==', user.uid)
-                );
-                const snapshot = await getDocs(q);
-
-                // ✅ Only update state if component still mounted
+        const unsubscribe = listenToUserCollection<TodoItem>({
+            collectionName: TODOS_COLLECTION,
+            userId: user.uid,
+            mapFn: (raw) => raw as TodoItem,
+            onData: (items) => {
                 if (!isMounted) return;
-
-                const data = snapshot.docs.map(doc => ({
-                    ...doc.data(),
-                    id: doc.id
-                })) as TodoItem[];
-                data.sort((a, b) => b.createdAt - a.createdAt);
-                setTodos(data);
+                items.sort((a, b) => b.createdAt - a.createdAt);
+                setTodos(items);
                 setLastError(null);
-            } catch (error) {
-                // ✅ Only update state if component still mounted
-                if (!isMounted) return;
-
-                const errorMessage = getErrorMessage(error);
-                logError(error, 'Load Todos');
-                setLastError(errorMessage);
-                showError('Failed to load todos', errorMessage);
-            } finally {
-                // ✅ Only update state if component still mounted
-                if (isMounted) {
+                if (!hasLoaded) {
                     setIsLoading(false);
+                    hasLoaded = true;
                 }
+            },
+            onError: (message) => {
+                if (!isMounted) return;
+                setLastError(message);
+                showError('Failed to load todos', message);
+                setIsLoading(false);
             }
-        };
+        });
 
-        loadTodos();
-
-        // ✅ Cleanup to prevent memory leaks and race conditions
         return () => {
             isMounted = false;
+            unsubscribe();
         };
     }, [user, showError]);  // ✅ Added showError to dependency array
 

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import type { TimeTableEntry, AppSettings } from '../types';
 import { db } from '../lib/firebase';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
 import { TimetableContext } from './definitions/TimetableContextDefinition';
+import { listenToUserCollection } from '../lib/firestore';
 
 const ENTRIES_COLLECTION = 'entries';
 const SETTINGS_KEY = 'timetable_settings';
@@ -24,57 +25,44 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return saved ? { ...JSON.parse(saved), theme: 'dark' } : { theme: 'dark', notificationsEnabled: true };
     });
 
-    // Load entries from Firestore scoped to current user
+    // Load entries from Firestore scoped to current user with real-time updates
     useEffect(() => {
         if (!user) {
+            setEntries([]);
             setIsLoading(false);
             return;
         }
 
         let isMounted = true;  // ✅ Prevent state updates after unmount
+        let hasLoaded = false;
 
-        const loadEntries = async () => {
-            try {
-                setIsLoading(true);  // ✅ Explicitly set loading true
-                setLastError(null);
+        setIsLoading(true);  // ✅ Explicitly set loading true
+        setLastError(null);
 
-                const q = query(
-                    collection(db, ENTRIES_COLLECTION),
-                    where('userId', '==', user.uid)
-                );
-                const snapshot = await getDocs(q);
-
-                // ✅ Only update state if component still mounted
+        const unsubscribe = listenToUserCollection<TimeTableEntry>({
+            collectionName: ENTRIES_COLLECTION,
+            userId: user.uid,
+            mapFn: (raw) => raw as TimeTableEntry,
+            onData: (items) => {
                 if (!isMounted) return;
-
-                const data = snapshot.docs.map(doc => ({
-                    ...doc.data(),
-                    id: doc.id
-                })) as TimeTableEntry[];
-
-                setEntries(data);
+                setEntries(items);
                 setLastError(null);
-            } catch (error) {
-                // ✅ Only update state if component still mounted
-                if (!isMounted) return;
-
-                const errorMessage = getErrorMessage(error);
-                logError(error, 'Load Entries');
-                setLastError(errorMessage);
-                showError('Failed to load schedule', errorMessage);
-            } finally {
-                // ✅ Only update state if component still mounted
-                if (isMounted) {
+                if (!hasLoaded) {
                     setIsLoading(false);
+                    hasLoaded = true;
                 }
+            },
+            onError: (message) => {
+                if (!isMounted) return;
+                setLastError(message);
+                showError('Failed to load schedule', message);
+                setIsLoading(false);
             }
-        };
+        });
 
-        loadEntries();
-
-        // ✅ Cleanup to prevent memory leaks and race conditions
         return () => {
             isMounted = false;
+            unsubscribe();
         };
     }, [user, showError]);  // ✅ Added showError to dependency array
 

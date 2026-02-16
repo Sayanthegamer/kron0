@@ -3,8 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, AlertTriangle, Loader2 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { deleteUserDataAcrossCollections } from '../lib/firestore';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -37,17 +36,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         try {
             const collections = ['entries', 'todos', 'focus_history'];
 
-            // Note: Firestore batch limit is 500. For a real app with huge data, we'd need to chunk this.
-            // For this personal app, fetching and deleting is feasible, but let's do it safely.
-
-            for (const colName of collections) {
-                const q = query(collection(db, colName), where('userId', '==', user.uid));
-                const snapshot = await getDocs(q);
-
-                snapshot.docs.forEach((document) => {
-                    deleteDoc(doc(db, colName, document.id));
-                });
-            }
+            await deleteUserDataAcrossCollections(collections, user.uid);
 
             setStatus('success');
             setTimeout(() => {
