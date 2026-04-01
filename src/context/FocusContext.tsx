@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { type FocusSession, type TimerMode } from '../types';
 import { MODES } from '../constants';
 import { db } from '../lib/firebase';
-import { collection, addDoc, query, where, orderBy } from 'firebase/firestore';
+import { collection, addDoc, orderBy } from 'firebase/firestore';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
@@ -31,9 +31,8 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // NO Audio element needed using Web Audio API
 
     // Play Beep Function
-    const playBeep = () => {
+    const playBeep = useCallback(() => {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
             if (!AudioContext) return;
 
@@ -45,7 +44,7 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             gain.connect(ctx.destination);
 
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, ctx.currentTime); // 440Hz beep
+            osc.frequency.setValueAtTime(440, ctx.currentTime);
 
             gain.gain.setValueAtTime(0.1, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5);
@@ -55,7 +54,7 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         } catch (e) {
             console.error('Audio play failed', e);
         }
-    };
+    }, []);
 
     // Load history with real-time updates
     useEffect(() => {
@@ -88,42 +87,44 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             isMounted = false;
             unsubscribe();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
+    }, [user, showError]);
 
     const clearError = () => setLastError(null);
 
     const retryLastOperation = () => {
         if (lastFailedOperation) {
-            lastFailedOperation();
+            (lastFailedOperation as () => void)();
             setLastFailedOperation(null);
         }
     };
 
     // Save session with error handling and retry logic
-    const saveSession = async (sessionData: Omit<FocusSession, 'id'> & { userId: string }) => {
+    const saveSession = useCallback(async (sessionData: Omit<FocusSession, 'id'> & { userId: string }) => {
         const operation = async () => {
             setIsSaving(true);
             showInfo('Saving session...', 'Recording your focus time');
             
             try {
                 const docRef = await addDoc(collection(db, HISTORY_COLLECTION), sessionData);
-                const newSession = { ...sessionData, id: docRef.id };
-                setSessionHistory(prev => [newSession, ...prev]);
-                setLastCompletedSession(newSession);
-                showSuccess('Session saved', 'Your focus session has been recorded');
+                const completeSession: FocusSession = {
+                    id: docRef.id,
+                    ...sessionData
+                };
                 setLastError(null);
+                setLastFailedOperation(null);
+                showSuccess('Session saved', 'Great job on staying focused!');
+                setLastCompletedSession(completeSession);
+                setSessionHistory(prev => [completeSession, ...prev]);
             } catch (error) {
-                const errorMessage = getErrorMessage(error);
+                const message = getErrorMessage(error);
                 logError(error, 'Save Focus Session');
-                setLastError(errorMessage);
-                showError('Failed to save session', errorMessage);
+                setLastError(message);
                 
-                // Store operation for retry if it's retriable
                 if (isRetriableError(error)) {
                     setLastFailedOperation(() => () => saveSession(sessionData));
                 }
-                throw error;
+                
+                showError('Failed to save session', message);
             } finally {
                 setIsSaving(false);
             }
@@ -134,11 +135,11 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         } catch {
             // Error already handled in operation
         }
-    };
+    }, [showError, showInfo, showSuccess]);
 
     // Timer Logic (Moved from FocusMode.tsx)
     useEffect(() => {
-        let interval: any;
+        let interval: ReturnType<typeof setInterval>;
         if (isActive && timeLeft > 0) {
             interval = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
         } else if (timeLeft === 0 && isActive) {
@@ -160,8 +161,7 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             }
         }
         return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isActive, timeLeft, user, mode, customMinutes]);
+    }, [isActive, timeLeft, user, mode, customMinutes, playBeep, saveSession]);
 
     const toggleTimer = () => setIsActive(prev => !prev);
 

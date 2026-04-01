@@ -14,9 +14,19 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 // ✅ REMOVED: import { OnboardingTour } from './components/OnboardingTour';
 import { StatsWidget } from './components/StatsWidget';
-import { WeekView } from './components/WeekView';
 import { Dashboard } from './pages/Dashboard';
-import { FocusMode } from './pages/FocusMode';
+// ⚡ LAZY LOADED: import { FocusMode } from './pages/FocusMode';
+// ⚡ LAZY LOADED: import { WeekView } from './components/WeekView';
+
+const FocusMode = React.lazy(() => 
+  import('./pages/FocusMode').then(m => ({ default: m.FocusMode }))
+    .catch(err => { logError(err, 'Lazy import: FocusMode'); throw err; })
+);
+
+const WeekView = React.lazy(() => 
+  import('./components/WeekView').then(m => ({ default: m.WeekView }))
+    .catch(err => { logError(err, 'Lazy import: WeekView'); throw err; })
+);
 import { useNotifications } from './hooks/useNotifications';
 import { logError } from './lib/errors';
 import type { TimeTableEntry } from './types';
@@ -38,7 +48,6 @@ const LandingPage = React.lazy(() =>
 
 const LoginPage = React.lazy(() =>
   import('./pages/LoginPage')
-    .then((module) => ({ default: module.LoginPage }))
     .catch((error) => {
       logError(error, 'Lazy import: LoginPage');
       throw error;
@@ -84,16 +93,22 @@ const AppContent: React.FC = () => {
 
   return (
     <Layout activeTab={activeTab} onTabChange={setActiveTab} onAddClick={handleAddClick}>
-      {activeTab === 'dashboard' && (
-        <Dashboard onEntryClick={handleEditClick} onAddEntry={handleAddClick} />
-      )}
-      {activeTab === 'week' && <WeekView onEntryClick={handleEditClick} />}
-      {activeTab === 'focus' && <FocusMode />}
-      {activeTab === 'stats' && (
-        <div className="pt-4 space-y-4">
-          <StatsWidget />
+      <Suspense fallback={
+        <div className="flex items-center justify-center p-12">
+          <Loader2 className="w-6 h-6 text-primary animate-spin" />
         </div>
-      )}
+      }>
+        {activeTab === 'dashboard' && (
+          <Dashboard onEntryClick={handleEditClick} onAddEntry={handleAddClick} />
+        )}
+        {activeTab === 'week' && <WeekView onEntryClick={handleEditClick} />}
+        {activeTab === 'focus' && <FocusMode />}
+        {activeTab === 'stats' && (
+          <div className="pt-4 space-y-4">
+            <StatsWidget />
+          </div>
+        )}
+      </Suspense>
 
       <EntryModal
         isOpen={isModalOpen}

@@ -117,11 +117,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
 }) => {
   return (
     <div className={`flex flex-col items-center justify-center p-8 ${className}`}>
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full mb-3"
-      />
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full mb-3 animate-spin-smooth" />
       <p className="text-muted-foreground text-sm">{message}</p>
     </div>
   );
@@ -180,12 +176,9 @@ export const RetryOperation: React.FC<RetryOperationProps> = ({
       disabled={isRetrying}
       className={`flex items-center gap-2 px-3 py-1.5 bg-destructive/10 text-destructive rounded-lg hover:bg-destructive/20 transition-smooth text-sm ${isRetrying ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
     >
-      <motion.div
-        animate={{ rotate: isRetrying ? 360 : 0 }}
-        transition={{ duration: 1, repeat: isRetrying ? Infinity : 0, ease: "linear" }}
-      >
+      <div className={`flex items-center gap-2 ${isRetrying ? 'animate-spin-smooth' : ''}`}>
         <RefreshCw className="w-3 h-3" />
-      </motion.div>
+      </div>
       {isRetrying ? 'Retrying...' : 'Retry'}
     </motion.button>
   );

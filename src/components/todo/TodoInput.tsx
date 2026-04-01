@@ -50,15 +50,14 @@ export const TodoInput: React.FC<TodoInputProps> = ({ onAdd, isSaving }) => {
                     )}
                 />
                 
-                {/* Border Glow Animation */}
+                {/* Border Glow — CSS */}
                 <AnimatePresence>
                     {isFocused && (
                         <motion.div
-                            className="absolute inset-0 rounded-xl border-2 border-primary/30 pointer-events-none z-10"
+                            className="absolute inset-0 rounded-xl border-2 border-primary/30 pointer-events-none z-10 animate-pulse-glow"
                             initial={{ opacity: 0 }}
-                            animate={{ opacity: [0, 1, 0.5, 1] }}
+                            animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 2, repeat: Infinity }}
                         />
                     )}
                 </AnimatePresence>
@@ -78,13 +77,9 @@ export const TodoInput: React.FC<TodoInputProps> = ({ onAdd, isSaving }) => {
             >
                 <AnimatePresence mode="wait">
                     {isSaving ? (
-                        <motion.div
-                            key="loading"
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        >
+                        <div key="loading" className="animate-spin-smooth">
                             <Loader2 size={20} />
-                        </motion.div>
+                        </div>
                     ) : justAdded ? (
                         <motion.div
                             key="success"

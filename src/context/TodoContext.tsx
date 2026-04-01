@@ -112,6 +112,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const toggleTodo = async (id: string) => {
+        if (!user) return; // Auth guard
         const operation = async () => {
             setIsSaving(true);
             
@@ -149,6 +150,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const deleteTodo = async (id: string) => {
+        if (!user) return; // Auth guard
         const operation = async () => {
             setIsSaving(true);
             showInfo('Deleting...', 'Removing task');

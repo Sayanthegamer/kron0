@@ -60,19 +60,8 @@ export const TodoWidget: React.FC = () => {
                 <ConfettiExplosion active={showConfetti} />
             </div>
 
-            {/* Decorative background element */}
-            <motion.div 
-                className="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl pointer-events-none opacity-50"
-                animate={{ 
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.5, 0.3],
-                }}
-                transition={{ 
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                }}
-            />
+            {/* Decorative background element — CSS ambient glow */}
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl pointer-events-none opacity-50 ambient-glow" />
 
             {/* Header */}
             <div className="flex items-center justify-between mb-6 relative z-10">
@@ -167,13 +156,9 @@ export const TodoWidget: React.FC = () => {
                     >
                         {filter === 'all' && todos.length === 0 ? (
                             <>
-                                <motion.div 
-                                    className="mb-3 p-4 bg-muted/30 rounded-full"
-                                    animate={{ y: [0, -5, 0] }}
-                                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                                >
+                                <div className="mb-3 p-4 bg-muted/30 rounded-full floating-button">
                                     <Sparkles size={24} className="text-primary/50" />
-                                </motion.div>
+                                </div>
                                 <p className="font-medium text-foreground">No tasks yet</p>
                                 <p className="text-xs max-w-[200px] mt-1">Add a task to get started on your productivity journey!</p>
                             </>

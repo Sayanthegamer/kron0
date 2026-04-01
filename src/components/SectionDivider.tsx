@@ -33,19 +33,8 @@ export const SectionDivider: React.FC<SectionDividerProps> = ({
         transition={{ duration: 0.5, delay: 0.1 }}
         style={{ transformOrigin: 'left' }}
       >
-        {/* Animated shine effect */}
-        <motion.div
-          className="absolute inset-0 h-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"
-          animate={{
-            x: ['-100%', '200%'],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            repeatDelay: 2,
-            ease: "easeInOut"
-          }}
-        />
+        {/* Animated shine effect — CSS */}
+        <div className="absolute inset-0 h-full bg-gradient-to-r from-transparent via-primary/30 to-transparent gradient-shimmer" />
       </motion.div>
 
       {/* Center content */}
@@ -84,19 +73,9 @@ export const SectionDivider: React.FC<SectionDividerProps> = ({
       ) : (
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {icon && (
-            <motion.div
-              animate={{ 
-                rotate: [0, 5, -5, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="text-current"
-            >
+            <div className="text-current animate-float-rotate">
               {icon}
-            </motion.div>
+            </div>
           )}
           
           <span className="uppercase tracking-wider font-semibold">
@@ -124,19 +103,8 @@ export const SectionDivider: React.FC<SectionDividerProps> = ({
         transition={{ duration: 0.5, delay: 0.1 }}
         style={{ transformOrigin: 'right' }}
       >
-        {/* Animated shine effect */}
-        <motion.div
-          className="absolute inset-0 h-full bg-gradient-to-l from-transparent via-secondary/30 to-transparent"
-          animate={{
-            x: ['100%', '-200%'],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            repeatDelay: 2,
-            ease: "easeInOut"
-          }}
-        />
+        {/* Animated shine effect — CSS */}
+        <div className="absolute inset-0 h-full bg-gradient-to-l from-transparent via-secondary/30 to-transparent gradient-shimmer" />
       </motion.div>
     </motion.div>
   );

@@ -56,68 +56,36 @@ export const EmptyStateEnhanced: React.FC<EmptyStateEnhancedProps> = ({
         stiffness: 120,
         damping: 15
       }}
-      className={`glass-card p-12 rounded-2xl flex flex-col items-center justify-center text-center border-dashed border-2 border-border ${className}`}
+      className={`glass-card p-12 rounded-2xl flex flex-col items-center justify-center text-center border-dashed border-2 border-border relative overflow-hidden ${className}`}
     >
-      {/* Animated Icon Container */}
+      {/* Animated Icon Container — CSS float */}
       <motion.div 
-        className={`relative w-24 h-24 rounded-full bg-gradient-to-br ${getGradient()} flex items-center justify-center mb-6`}
+        className={`relative w-24 h-24 rounded-full bg-gradient-to-br ${getGradient()} flex items-center justify-center mb-6 floating-button`}
         whileHover={{ scale: 1.1, rotate: 5 }}
-        animate={{ 
-          y: [0, -8, 0],
-        }}
-        transition={{ 
-          y: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-          rotate: { type: "spring", stiffness: 300 }
-        }}
+        transition={{ rotate: { type: "spring", stiffness: 300 } }}
       >
-        {/* Glow effect */}
-        <motion.div
-          className={`absolute inset-0 rounded-full bg-gradient-to-br ${getGradient()}`}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.1, 0.3],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
+        {/* Glow effect — CSS ambient */}
+        <div
+          className={`absolute inset-0 rounded-full bg-gradient-to-br ${getGradient()} ambient-glow`}
           style={{ filter: 'blur(20px)' }}
         />
 
-        {/* Icon */}
-        <motion.div
-          className="relative z-10 text-primary"
-          animate={{
-            rotate: [0, 5, -5, 0],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
+        {/* Icon — CSS gentle wobble */}
+        <div className="relative z-10 text-primary animate-float-rotate">
           {getIcon()}
-        </motion.div>
+        </div>
 
-        {/* Orbiting particles */}
+        {/* Orbiting particles — CSS spin */}
         {[...Array(3)].map((_, i) => (
-          <motion.div
+          <div
             key={i}
-            className="absolute w-2 h-2 rounded-full bg-primary/40"
-            animate={{
-              rotate: [0, 360],
-            }}
-            transition={{
-              duration: 3 + i,
-              repeat: Infinity,
-              ease: "linear",
-              delay: i * 0.5
-            }}
+            className="absolute w-2 h-2 rounded-full bg-primary/40 animate-spin-slow"
             style={{
               top: '50%',
               left: '50%',
               transformOrigin: `${30 + i * 10}px 0`,
+              animationDuration: `${3 + i}s`,
+              animationDelay: `${i * 0.5}s`,
             }}
           />
         ))}
@@ -159,32 +127,13 @@ export const EmptyStateEnhanced: React.FC<EmptyStateEnhancedProps> = ({
         </motion.button>
       )}
 
-      {/* Decorative elements */}
-      <motion.div
-        className="absolute top-8 right-8 w-16 h-16 rounded-full bg-primary/5"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+      {/* Decorative blurs — CSS ambient */}
+      <div
+        className="absolute top-8 right-8 w-16 h-16 rounded-full bg-primary/5 ambient-glow"
         style={{ filter: 'blur(20px)' }}
       />
-      <motion.div
-        className="absolute bottom-8 left-8 w-20 h-20 rounded-full bg-secondary/5"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.2, 0.4, 0.2],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1
-        }}
+      <div
+        className="absolute bottom-8 left-8 w-20 h-20 rounded-full bg-secondary/5 ambient-glow-delayed"
         style={{ filter: 'blur(25px)' }}
       />
     </motion.div>

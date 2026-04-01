@@ -31,23 +31,16 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden">
-            {/* Enhanced Ambient Background Glows */}
-            <motion.div
-                animate={{
-                    opacity: activeTab === 'focus' ? 0.6 : 0.3,
-                    scale: activeTab === 'focus' ? 1.1 : 1,
-                }}
-                transition={{ duration: 4, repeat: Infinity, repeatType: "mirror" }}
-                className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none will-change-transform"
+            {/* Ambient Background Glows */}
+            <div
+                className={`transition-smooth fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none will-change-transform ambient-glow ${
+                    activeTab === 'focus' ? 'opacity-60 scale-110' : 'opacity-30 scale-100'
+                }`}
             />
-            <motion.div
-                animate={{
-                    opacity: activeTab === 'focus' ? 0.6 : 0.2,
-                    scale: activeTab === 'focus' ? 1.05 : 1,
-                    background: activeTab === 'focus' ? 'var(--secondary)' : 'var(--secondary)'
-                }}
-                transition={{ duration: 5, delay: 1, repeat: Infinity, repeatType: "mirror" }}
-                className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-secondary/10 rounded-full blur-[80px] md:blur-[120px] pointer-events-none will-change-transform"
+            <div
+                className={`transition-smooth fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none will-change-transform ambient-glow-delayed ${
+                    activeTab === 'focus' ? 'opacity-50 scale-105' : 'opacity-20 scale-100'
+                }`}
             />
 
             {/* Header */}
@@ -96,7 +89,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 p-3 md:p-6 pb-28 overflow-y-auto w-full max-w-lg mx-auto z-0 custom-scrollbar scroll-smooth">
+            <main className="flex-1 p-3 md:p-6 pb-28 md:pb-6 md:pl-[100px] overflow-y-auto w-full max-w-lg md:max-w-5xl lg:max-w-7xl mx-auto z-0 custom-scrollbar scroll-smooth">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeTab}
@@ -107,7 +100,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                             duration: isMobile ? 0.2 : 0.3, 
                             ease: "easeOut" 
                         }}
-                        className="animate-entrance"
+                        className="animate-entrance h-full"
                     >
                         {children}
                     </motion.div>
@@ -115,7 +108,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
             </main>
 
             {/* Enhanced Floating Dock Navigation */}
-            <nav className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
+            <nav className="fixed bottom-6 left-0 right-0 md:left-6 md:right-auto md:top-1/2 md:-translate-y-1/2 md:bottom-auto z-50 flex justify-center pointer-events-none">
                 <motion.div 
                     ref={dockRef}
                     initial={{ y: 100, opacity: 0 }}
@@ -127,7 +120,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                         stiffness: 300,
                         damping: 30
                     }}
-                    className={`bg-black/30 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-2xl flex items-center gap-1 pointer-events-auto hover-lift ${isMobile ? 'gap-0.5' : 'gap-2'}`}
+                    className={`bg-black/30 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-2xl flex md:flex-col items-center gap-1 pointer-events-auto hover-lift ${isMobile ? 'gap-0.5' : 'gap-2'}`}
                     whileHover={{ scale: 1.02 }}
                 >
 
@@ -170,7 +163,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                             rotate: -5
                         }}
                         onClick={onAddClick}
-                        className={`mx-1 md:mx-2 bg-gradient-to-r from-primary to-purple-600 text-white rounded-xl shadow-lg shadow-primary/40 border border-white/20 focus-ring ${isMobile ? 'p-2.5' : 'p-3.5'}`}
+                        className={`mx-1 md:mx-0 md:my-2 bg-gradient-to-r from-primary to-purple-600 text-white rounded-xl shadow-lg shadow-primary/40 border border-white/20 focus-ring ${isMobile ? 'p-2.5' : 'p-3.5'}`}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
                         <Plus size={isMobile ? 20 : 24} />
@@ -350,14 +343,14 @@ const NavButton: React.FC<NavButtonProps> = ({
                     <AnimatePresence>
                         {isHovered && !isMobile && (
                             <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                                initial={{ opacity: 0, x: -10, scale: 0.9 }}
+                                animate={{ opacity: 1, x: 0, scale: 1 }}
+                                exit={{ opacity: 0, x: -10, scale: 0.9 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-lg whitespace-nowrap border border-white/10 shadow-lg"
+                                className="absolute left-full ml-4 top-1/2 transform -translate-y-1/2 bg-black/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-lg whitespace-nowrap border border-white/10 shadow-lg z-50 flex items-center"
                             >
                                 {label}
-                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80" />
+                                <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-black/80" />
                             </motion.div>
                         )}
                     </AnimatePresence>

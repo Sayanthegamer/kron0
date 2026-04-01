@@ -48,8 +48,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
         }
         setErrors({});
         setTouched({});
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen]);
+    }, [isOpen, initialData, defaultDay]);
 
     const validateField = (name: string, value: string | string[] | undefined) => {
         switch (name) {

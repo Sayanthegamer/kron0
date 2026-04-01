@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 
-export const LoginPage: React.FC = () => {
+const LoginPage: React.FC = () => {
     const { signInWithGoogle, signInWithEmail, signUpWithEmail, isSigningIn } = useAuth();
     const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
@@ -18,10 +18,8 @@ export const LoginPage: React.FC = () => {
             } else {
                 await signInWithEmail(email, password);
             }
-        } catch (err) {
-            // AuthContext already showed error toast via showError()
-            // Just log if needed for debugging
-            console.error('Auth error:', err);
+        } catch {
+            // AuthContext already showed error toast; no additional logging needed
         }
     };
 
@@ -29,9 +27,8 @@ export const LoginPage: React.FC = () => {
         try {
             await signInWithGoogle();
             // AuthContext shows success toast
-        } catch (err) {
+        } catch {
             // AuthContext already showed error toast
-            console.error('Google sign in error:', err);
         }
     };
 
@@ -85,6 +82,7 @@ export const LoginPage: React.FC = () => {
                             onChange={e => setEmail(e.target.value)}
                             placeholder="Email"
                             required
+                            autoComplete="email"
                             className="w-full p-4 pl-12 rounded-xl bg-muted text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/50"
                         />
                     </div>
@@ -96,7 +94,8 @@ export const LoginPage: React.FC = () => {
                             onChange={e => setPassword(e.target.value)}
                             placeholder="Password"
                             required
-                            minLength={6}
+                            minLength={8}
+                            autoComplete={isSignUp ? 'new-password' : 'current-password'}
                             className="w-full p-4 pl-12 rounded-xl bg-muted text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/50"
                         />
                     </div>
@@ -125,3 +124,5 @@ export const LoginPage: React.FC = () => {
         </div>
     );
 };
+
+export default LoginPage;

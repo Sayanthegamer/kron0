@@ -48,43 +48,26 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
 
     return (
         <div className="flex flex-col items-center gap-2 mt-4">
-            {/* Animated status badge */}
-            <motion.div
-                animate={{
-                    scale: isActive ? [1, 1.05, 1] : 1,
-                    boxShadow: isActive ? `0 0 20px var(--${mode === 'focus' ? 'primary' : mode === 'short' ? 'teal' : mode === 'long' ? 'indigo' : 'pink'}-500)` : 'none'
-                }}
-                transition={{
-                    duration: 2,
-                    repeat: isActive ? Infinity : 0,
-                    ease: 'easeInOut'
-                }}
-                className={`flex items-center gap-2 px-4 py-1.5 rounded-full ${modeColors[mode]} text-white font-medium text-sm shadow-lg ${modeGlow[mode]}`}
+            {/* Status badge — CSS micro-pulse when active */}
+            <div
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-full ${modeColors[mode]} text-white font-medium text-sm shadow-lg ${modeGlow[mode]} ${isActive ? 'micro-pulse' : ''}`}
             >
-                {/* Animated dots when active */}
+                {/* Animated dots when active — CSS staggered bounce */}
                 <AnimatePresence mode="wait">
                     {isActive && (
                         <div className="flex gap-1">
                             {[0, 1, 2].map((i) => (
-                                <motion.span
+                                <span
                                     key={i}
-                                    className="w-1.5 h-1.5 rounded-full bg-white"
-                                    animate={{
-                                        scale: [1, 1.5, 1],
-                                        opacity: [0.5, 1, 0.5]
-                                    }}
-                                    transition={{
-                                        duration: 1,
-                                        repeat: Infinity,
-                                        delay: i * 0.2
-                                    }}
+                                    className="w-1.5 h-1.5 rounded-full bg-white bounce-dot"
+                                    style={{ animationDelay: `${i * 0.2}s` }}
                                 />
                             ))}
                         </div>
                     )}
                 </AnimatePresence>
                 <span>{message}</span>
-            </motion.div>
+            </div>
 
             {/* Subtle helper text */}
             <motion.p

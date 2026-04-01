@@ -1,0 +1,31 @@
+- generic [ref=e6]:
+  - navigation [ref=e7]:
+    - generic [ref=e8]:
+      - generic [ref=e10]: K
+      - text: Kron0
+    - button "Sign In" [ref=e11] [cursor=pointer]
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]: v2.0 Now Available
+      - heading "Master your time with Kron0." [level=1] [ref=e15]
+      - paragraph [ref=e16]: The ultimate student companion. Organize classes, track focus sessions, and manage tasks in a beautifully focused interface.
+      - button "Get Started Now" [ref=e17] [cursor=pointer]:
+        - generic [ref=e19]:
+          - text: Get Started Now
+          - img [ref=e20]
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - img [ref=e25]
+        - heading "Focus Timer" [level=3] [ref=e28]
+        - paragraph [ref=e29]: Stay in flow with customizable Pomodoro sessions and analytics.
+      - generic [ref=e30]:
+        - img [ref=e32]
+        - heading "Smart Schedule" [level=3] [ref=e34]
+        - paragraph [ref=e35]: Visualize your week with a dynamic, responsive timetable.
+      - generic [ref=e36]:
+        - img [ref=e38]
+        - heading "Sync & Insights" [level=3] [ref=e40]
+        - paragraph [ref=e41]: Track your progress with detailed charts and cloud sync.
+  - contentinfo [ref=e42]:
+    - paragraph [ref=e43]: Designed & Built by Sayan.
+    - generic [ref=e44]: © 2025 Kron0. All rights reserved.

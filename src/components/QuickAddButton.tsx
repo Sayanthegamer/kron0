@@ -54,31 +54,14 @@ export const QuickAddButton: React.FC<QuickAddButtonProps> = ({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         initial={{ scale: 0 }}
-        animate={{ 
-          scale: 1,
-          boxShadow: [
-            '0 4px 14px 0 rgba(139, 47, 201, 0.39)',
-            '0 8px 24px 0 rgba(139, 47, 201, 0.5)',
-            '0 4px 14px 0 rgba(139, 47, 201, 0.39)',
-          ]
-        }}
+        animate={{ scale: 1 }}
         transition={{ 
-          scale: { type: "spring", stiffness: 260, damping: 20 },
-          boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+          scale: { type: "spring", stiffness: 260, damping: 20 }
         }}
+        style={{ boxShadow: '0 4px 14px 0 rgba(139, 47, 201, 0.39)' }}
       >
-        {/* Gradient shimmer effect */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
-          initial={{ x: '-100%' }}
-          animate={{ x: '200%' }}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            repeatDelay: 1,
-            ease: "easeInOut"
-          }}
-        />
+        {/* Gradient shimmer effect — CSS */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 gradient-shimmer" />
 
         {/* Icon */}
         <motion.div
@@ -138,21 +121,13 @@ export const QuickAddButton: React.FC<QuickAddButtonProps> = ({
         />
       </motion.button>
 
-      {/* Floating animation effect */}
-      <motion.div
-        className="absolute inset-0 rounded-full pointer-events-none"
-        animate={{
-          y: [0, -4, 0],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+      {/* Floating glow — CSS ambient */}
+      <div
+        className="absolute inset-0 rounded-full pointer-events-none floating-button"
         style={{ 
           background: 'radial-gradient(circle, rgba(139, 47, 201, 0.2) 0%, transparent 70%)',
           filter: 'blur(10px)',
-          transform: 'translateZ(0)', // Force GPU acceleration
+          transform: 'translateZ(0)',
         }}
       />
     </div>

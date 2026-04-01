@@ -37,10 +37,10 @@ export const FocusMode: React.FC = () => {
     // Show celebration when timer completes
     useEffect(() => {
         if (lastCompletedSession && !showCelebration && (Date.now() - lastCompletedSession.startTime) < 5000) {
-            setShowCelebration(true);
+            const timer = setTimeout(() => setShowCelebration(true), 0);
+            return () => clearTimeout(timer);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lastCompletedSession]);
+    }, [lastCompletedSession, showCelebration]);
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -303,18 +303,8 @@ export const FocusMode: React.FC = () => {
                             : '0 20px 60px -15px rgba(139, 47, 201, 0.6)',
                     }}
                 >
-                    {/* Animated background gradient */}
-                    <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
-                        animate={{
-                            x: ['-100%', '200%']
-                        }}
-                        transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            ease: 'linear'
-                        }}
-                    />
+                    {/* Gradient shimmer — CSS */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent gradient-shimmer" />
 
                     {/* Ripple effect on click */}
                     <motion.div

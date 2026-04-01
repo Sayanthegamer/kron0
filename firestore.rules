@@ -2,32 +2,73 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Default: deny all
+    // Default: deny everything
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // User-owned todos
+    // ─────────────────────────────────────────────
+    // TODOS collection
+    // ─────────────────────────────────────────────
     match /todos/{todoId} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isOwner();
+
+      allow create: if isSignedIn()
+        && isNewOwner()
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 500
+        && request.resource.data.completed is bool
+        && request.resource.data.createdAt is number;
     }
 
-    // User-owned timetable entries
+    // ─────────────────────────────────────────────
+    // TIMETABLE ENTRIES collection
+    // ─────────────────────────────────────────────
     match /entries/{entryId} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isOwner();
+
+      allow create: if isSignedIn()
+        && isNewOwner()
+        && request.resource.data.subject is string
+        && request.resource.data.subject.size() >= 2
+        && request.resource.data.subject.size() <= 200
+        && request.resource.data.days is list
+        && request.resource.data.days.size() > 0
+        && request.resource.data.startTime is string
+        && request.resource.data.endTime is string;
     }
 
-    // User-owned focus sessions
+    // ─────────────────────────────────────────────
+    // FOCUS HISTORY collection
+    // ─────────────────────────────────────────────
     match /focus_history/{sessionId} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow read, update, delete: if isOwner();
+
+      allow create: if isSignedIn()
+        && isNewOwner()
+        && request.resource.data.duration is number
+        && request.resource.data.duration > 0
+        && request.resource.data.duration <= 86400; // max 24h in seconds
     }
 
+    // ─────────────────────────────────────────────
+    // Helper functions
+    // ─────────────────────────────────────────────
+
+    // Caller is authenticated
     function isSignedIn() {
       return request.auth != null;
     }
+
+    // Caller owns an EXISTING document
+    function isOwner() {
+      return isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Caller is setting userId on a NEW document to their own UID
+    function isNewOwner() {
+      return request.resource.data.userId == request.auth.uid;
+    }
   }
 }
-

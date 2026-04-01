@@ -83,23 +83,26 @@ export const getErrorMessage = (error: unknown): string => {
   return ERROR_MESSAGES[errorCode];
 };
 
-// Error logger function for debugging
+// Error logger function — verbose in dev, minimal in production
 export const logError = (error: unknown, context?: string): void => {
-  const timestamp = new Date().toISOString();
   const contextInfo = context ? `[${context}] ` : '';
-  const appError = error as AppError;
-  
-  console.group(`${contextInfo}🚨 Error at ${timestamp}`);
-  console.error('Error object:', error);
-  console.error('Error code:', getErrorCode(error));
-  console.error('Error message:', getErrorMessage(error));
-  
-  // Log stack trace for debugging
-  if (appError?.stack) {
-    console.error('Stack trace:', appError.stack);
+
+  if (import.meta.env.DEV) {
+    // Full diagnostics in development only
+    const timestamp = new Date().toISOString();
+    const appError = error as AppError;
+    console.group(`${contextInfo}🚨 Error at ${timestamp}`);
+    console.error('Error object:', error);
+    console.error('Error code:', getErrorCode(error));
+    console.error('User message:', getErrorMessage(error));
+    if (appError?.stack) {
+      console.error('Stack trace:', appError.stack);
+    }
+    console.groupEnd();
+  } else {
+    // Production: terse, no stack traces or internal error codes exposed
+    console.error(`${contextInfo}Error: ${getErrorMessage(error)}`);
   }
-  
-  console.groupEnd();
 };
 
 // Retry utility with exponential backoff
@@ -130,13 +133,15 @@ export const retryWithBackoff = async <T>(
   throw lastError;
 };
 
-// Check if error is retriable
+// Check if error is retriable (network-only — unknown errors are NOT retried)
 export const isRetriableError = (error: unknown): boolean => {
   const errorCode = getErrorCode(error);
   const retriableCodes: ErrorCode[] = [
     ErrorCode.NETWORK_ERROR,
-    ErrorCode.FIRESTORE_ERROR, // Some Firestore errors are retriable
-    ErrorCode.UNKNOWN_ERROR   // Retry unknown errors
+    // NOTE: FIRESTORE_ERROR is sometimes transient (unavailable, resource-exhausted)
+    ErrorCode.FIRESTORE_ERROR,
+    // UNKNOWN_ERROR is intentionally excluded — retrying unknown errors can
+    // amplify damage from destructive operations (e.g., repeated deletes)
   ];
   return retriableCodes.includes(errorCode);
 };

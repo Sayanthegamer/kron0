@@ -21,8 +21,20 @@ export const TimetableProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const [lastFailedOperation, setLastFailedOperation] = useState<(() => Promise<void>) | null>(null);
 
     const [settings, setSettings] = useState<AppSettings>(() => {
-        const saved = localStorage.getItem(SETTINGS_KEY);
-        return saved ? { ...JSON.parse(saved), theme: 'dark' } : { theme: 'dark', notificationsEnabled: true };
+        try {
+            const saved = localStorage.getItem(SETTINGS_KEY);
+            if (!saved) return { theme: 'dark', notificationsEnabled: true };
+            const parsed = JSON.parse(saved);
+            // Validate each field explicitly — never trust raw localStorage
+            return {
+                theme: 'dark', // always dark — user preference is locked
+                notificationsEnabled: typeof parsed.notificationsEnabled === 'boolean'
+                    ? parsed.notificationsEnabled
+                    : true,
+            };
+        } catch {
+            return { theme: 'dark', notificationsEnabled: true };
+        }
     });
 
     // Load entries from Firestore scoped to current user with real-time updates

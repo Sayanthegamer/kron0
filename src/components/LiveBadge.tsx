@@ -72,56 +72,25 @@ export const LiveBadge: React.FC<LiveBadgeProps> = ({
         damping: 15,
         delay: 0.1
       }}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${styles.bg} ${styles.border} ${styles.text} ${styles.glow} ${className}`}
+      className={`relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${styles.bg} ${styles.border} ${styles.text} ${styles.glow} ${className}`}
     >
       {styles.pulse && (
-        <motion.div
-          className="w-2 h-2 rounded-full bg-current"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [1, 0.7, 1],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
+        <div className="w-2 h-2 rounded-full bg-current micro-pulse" />
       )}
       
       {(icon || styles.defaultIcon) && (
-        <motion.div
-          animate={styles.pulse ? {
-            rotate: [0, 5, -5, 0],
-          } : {}}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
+        <div className={styles.pulse ? 'animate-float-rotate' : ''}>
           {icon || styles.defaultIcon}
-        </motion.div>
+        </div>
       )}
       
       <span className="text-xs font-bold uppercase tracking-wider">
         {label || styles.defaultLabel}
       </span>
 
-      {/* Animated ring for live badge */}
+      {/* Animated ring for live badge — pure CSS ripple */}
       {styles.pulse && (
-        <motion.div
-          className="absolute inset-0 rounded-full border-2 border-current opacity-30"
-          animate={{
-            scale: [1, 1.5],
-            opacity: [0.3, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeOut"
-          }}
-        />
+        <div className="absolute inset-0 rounded-full border-2 border-current live-badge-pulse" />
       )}
     </motion.div>
   );

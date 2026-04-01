@@ -183,6 +183,53 @@
     animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
+  @keyframes ambient-glow {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .ambient-glow {
+    animation: ambient-glow 8s ease-in-out infinite;
+  }
+
+  .ambient-glow-delayed {
+    animation: ambient-glow 10s ease-in-out infinite 2s;
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+  }
+
+  @keyframes float-rotate {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(10deg) scale(1.1); }
+    75% { transform: rotate(-10deg) scale(1.1); }
+  }
+  .animate-float-rotate {
+    animation: float-rotate 2s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    75% { transform: rotate(-5deg); }
+  }
+  .animate-wiggle {
+    animation: wiggle 3s ease-in-out infinite;
+  }
+
   /* Custom Scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
@@ -1134,6 +1181,51 @@
     background: hsl(0 84% 60% / 0.2);
     color: hsl(0 84% 60%);
     border: 1px solid hsl(0 84% 60% / 0.3);
+  }
+
+  /* =====================================================
+   * CSS Animation Utilities — Replaces Framer Motion
+   * Infinite repeat: Infinity patterns
+   * ===================================================== */
+
+  /* Smooth linear spinner (replaces animated rotate 360 repeat:Infinity) */
+  @keyframes spin-smooth {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .animate-spin-smooth {
+    animation: spin-smooth 1s linear infinite;
+  }
+
+  /* Horizontal shimmer sweep overlay (replaces x: -100% -> 200% repeat:Infinity) */
+  @keyframes shimmer-sweep {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+  /* Override gradient-shimmer for overlay sweep use-case */
+  .gradient-shimmer {
+    animation: shimmer-sweep 2s ease-in-out infinite !important;
+    background-size: unset !important;
+  }
+
+  /* Staggered bounce dots (StatusIndicator loading dots) */
+  @keyframes bounce-dot-anim {
+    0%, 80%, 100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1.5);
+      opacity: 1;
+    }
+  }
+  .bounce-dot {
+    animation: bounce-dot-anim 1s ease-in-out infinite;
+  }
+
+  /* Live now indicator — alias for live-badge-pulse */
+  .live-now-indicator {
+    animation: live-badge-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }
 

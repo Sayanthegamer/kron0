@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useTimetable } from '../hooks/useTimetable';
 import type { TimeTableEntry, DayOfWeek } from '../types';
 import { ClassCard } from './ClassCard';
@@ -16,27 +16,16 @@ const DAYS: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday
 
 export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) => {
     const { entries } = useTimetable();
-    const [selectedDay, setSelectedDay] = React.useState<DayOfWeek>('Monday');
+    const [selectedDay, setSelectedDay] = React.useState<DayOfWeek>(() => {
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }) as DayOfWeek;
+        return DAYS.includes(today) ? today : 'Monday';
+    });
     const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
     const [previousDay, setPreviousDay] = useState<DayOfWeek | null>(null);
     const [showWeekOverview, setShowWeekOverview] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
-    const [dateKey, setDateKey] = useState(0); // Force re-render for date animation
-
-    // Get current day on mount to auto-select
-    useEffect(() => {
-        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }) as DayOfWeek;
-        if (DAYS.includes(today)) {
-            setSelectedDay(today);
-        }
-    }, []);
-
-    // Trigger date flip animation when day changes
-    useEffect(() => {
-        setDateKey(prev => prev + 1);
-    }, [selectedDay, currentWeekStart]);
 
     const checkScroll = useCallback(() => {
         if (scrollRef.current) {
@@ -121,40 +110,49 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
         }
     };
 
-    const dayEntries = entries
-        .filter(e => e.days.includes(selectedDay))
-        .sort((a, b) => a.startTime.localeCompare(b.startTime));
+    // Memoized — only recomputes when entries or selectedDay changes, not on every render
+    const dayEntries = useMemo(() =>
+        entries
+            .filter(e => e.days.includes(selectedDay))
+            .sort((a, b) => a.startTime.localeCompare(b.startTime)),
+        [entries, selectedDay]
+    );
 
-    const selectedDate = getDayDate(selectedDay);
+    const selectedDate = useMemo(() => getDayDate(selectedDay), [selectedDay, currentWeekStart]);
     const isTodaySelected = isToday(selectedDate);
 
-    // Get class count status
+    // Helper — pure function, no deps, defined once
     const getClassCountStatus = (count: number) => {
         if (count === 0) return 'no-class';
         if (count <= 3) return 'normal';
         return 'busy';
     };
 
-    // Get week overview data
-    const getWeekOverview = () => {
-        const today = new Date();
-        const weekStart = startOfWeek(today, { weekStartsOn: 1 });
-        const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
+    // Precomputed count per day — replaces 7x entries.filter() calls inside JSX map
+    const dayCountMap = useMemo(() =>
+        Object.fromEntries(
+            DAYS.map(day => [day, entries.filter(e => e.days.includes(day)).length])
+        ) as Record<DayOfWeek, number>,
+        [entries]
+    );
+
+    // Week overview — now memoized, only recomputes when entries or week changes
+    const weekOverview = useMemo(() => {
+        const weekStart = startOfWeek(currentWeekStart, { weekStartsOn: 1 });
+        const weekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 1 });
         const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
         return weekDays.map(date => {
             const dayName = format(date, 'EEEE') as DayOfWeek;
-            const dayEntriesCount = entries.filter(e => e.days.includes(dayName)).length;
+            const count = dayCountMap[dayName] ?? 0;
             return {
                 day: dayName,
                 date,
-                count: dayEntriesCount,
-                status: getClassCountStatus(dayEntriesCount)
+                count,
+                status: getClassCountStatus(count)
             };
         });
-    };
-
-    const weekOverview = getWeekOverview();
+    }, [entries, currentWeekStart, dayCountMap]);
 
     // Handle day selection with animation
     const handleDaySelect = (day: DayOfWeek) => {
@@ -283,7 +281,7 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
                         const dayDate = getDayDate(day);
                         const isSelected = selectedDay === day;
                         const isDayToday = isToday(dayDate);
-                        const dayCount = entries.filter(e => e.days.includes(day)).length;
+                        const dayCount = dayCountMap[day] ?? 0;
                         const countStatus = getClassCountStatus(dayCount);
 
                         return (
@@ -430,7 +428,7 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
                                 {isTodaySelected && <LiveBadge variant="today" />}
                             </motion.h3>
                             <motion.p
-                                key={dateKey}
+                                key={selectedDate.toISOString()}
                                 className="text-sm text-muted-foreground mt-0.5 flex items-center gap-1.5"
                                 initial={{ rotateX: -90, opacity: 0 }}
                                 animate={{ rotateX: 0, opacity: 1 }}
