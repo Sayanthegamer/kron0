@@ -1198,14 +1198,14 @@
   }
 
   /* Horizontal shimmer sweep overlay (replaces x: -100% -> 200% repeat:Infinity) */
-  @keyframes shimmer-sweep {
-    0%   { transform: translateX(-100%); }
-    100% { transform: translateX(200%); }
+  /* Text/Background shimmer sweep (Metallic effect) */
+  @keyframes shimmer-text {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
   }
-  /* Override gradient-shimmer for overlay sweep use-case */
   .gradient-shimmer {
-    animation: shimmer-sweep 2s ease-in-out infinite !important;
-    background-size: unset !important;
+    background-size: 200% auto !important;
+    animation: shimmer-text 3s linear infinite !important;
   }
 
   /* Staggered bounce dots (StatusIndicator loading dots) */
