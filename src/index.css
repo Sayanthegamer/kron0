@@ -139,6 +139,25 @@
     text-shadow: 0 0 20px rgba(139, 47, 201, 0.5);
   }
 
+  .dot-grid {
+    background-image: radial-gradient(rgba(139, 47, 201, 0.1) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  .glass-premium {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-premium:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -146,6 +165,31 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .rotate-x-6 {
+    transform: rotateX(6deg);
+  }
+
+  .transform-gpu {
+    transform-style: preserve-3d;
+  }
+
+  @keyframes floating {
+    0%, 100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(0, -20px);
+    }
+  }
+
+  .animate-floating {
+    animation: floating 3s ease-in-out infinite;
   }
 
   /* Skeleton Loader Animation */
