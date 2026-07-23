@@ -14,14 +14,14 @@
   - [x] Update primary and secondary action button styles across app
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 3: Landing Page & Dashboard Widgets Redesign
-- [ ] Task: Rework Landing Page (`src/pages/LandingPage.tsx`)
-  - [ ] Update hero heading to "Master Your Semester without the Chaos"
-  - [ ] Rework hero live preview widget, feature cards, and CTA buttons
-- [ ] Task: Rework Dashboard & Core Widgets (`src/pages/Dashboard.tsx`, `ClassCard.tsx`, `TodoWidget.tsx`, `StatsWidget.tsx`)
-  - [ ] Update `ClassCard` status indicators, time badges, and action menus
-  - [ ] Refactor `TodoWidget` and `StatsWidget` card surfaces and progress bars
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+## Phase 3: Landing Page & Dashboard Widgets Redesign [checkpoint: 98a9b8d]
+- [x] Task: Rework Landing Page (`src/pages/LandingPage.tsx`)
+  - [x] Update hero heading to "Master Your Semester without the Chaos"
+  - [x] Rework hero live preview widget, feature cards, and CTA buttons
+- [x] Task: Rework Dashboard & Core Widgets (`src/pages/Dashboard.tsx`, `ClassCard.tsx`, `TodoWidget.tsx`, `StatsWidget.tsx`)
+  - [x] Update `ClassCard` status indicators, time badges, and action menus
+  - [x] Refactor `TodoWidget` and `StatsWidget` card surfaces and progress bars
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: Focus Mode UI & Final Quality Audit
 - [ ] Task: Redesign Focus Mode UI (`src/pages/FocusMode.tsx`)
