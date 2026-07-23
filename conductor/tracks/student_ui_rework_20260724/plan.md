@@ -1,11 +1,11 @@
 # Implementation Plan: Student UI Rework (`student_ui_rework_20260724`)
 
-## Phase 1: Core Design System & Color Tokens
-- [ ] Task: Update CSS Theme & Tokens (`src/index.css`)
-  - [ ] Define Slate & Indigo/Teal color variables (`--background`, `--card`, `--primary`, `--secondary`, `--accent`, `--border`)
-  - [ ] Replace glass glow utility classes with clean 1px border elevation cards
-  - [ ] Add soft ambient background glow radial gradients (`ambient-glow`)
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+## Phase 1: Core Design System & Color Tokens [checkpoint: c8e0d30]
+- [x] Task: Update CSS Theme & Tokens (`src/index.css`)
+  - [x] Define Slate & Indigo/Teal color variables (`--background`, `--card`, `--primary`, `--secondary`, `--accent`, `--border`)
+  - [x] Replace glass glow utility classes with clean 1px border elevation cards
+  - [x] Add soft ambient background glow radial gradients (`ambient-glow`)
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Navigation, Layout & Buttons Rework
 - [ ] Task: Refactor Navigation & Layout (`src/components/Layout.tsx`)
