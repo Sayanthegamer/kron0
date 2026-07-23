@@ -6,38 +6,40 @@
 
 @layer base {
   :root {
-    /* Base Colors - Deep Dark (Enforced) */
-    --background: 240 10% 4%;
-    /* #0a0a0f */
-    --foreground: 0 0% 98%;
+    /* Base Colors - Slate Theme */
+    --background: 222 47% 11%;
+    /* #0f172a */
+    --foreground: 210 40% 98%;
+    /* #f8fafc */
 
-    --card: 240 10% 4%;
-    --card-foreground: 0 0% 98%;
+    --card: 217 33% 17%;
+    /* #1e293b */
+    --card-foreground: 210 40% 98%;
 
-    --popover: 240 10% 4%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
 
-    /* Brand Colors - Neon Violet/Cyan */
-    --primary: 265 85% 55%;
-    /* #8b2fc9 */
-    --primary-foreground: 210 40% 98%;
+    /* Brand Colors - Modern Indigo / Teal */
+    --primary: 239 84% 67%;
+    /* #6366f1 Indigo */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 190 90% 50%;
-    /* #00d9f9 */
-    --secondary-foreground: 240 10% 4%;
+    --secondary: 173 80% 40%;
+    /* #14b8a6 Teal */
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 215 25% 22%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 265 85% 55%;
+    --accent: 173 80% 40%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5% 20%;
-    --input: 240 5% 20%;
-    --ring: 265 85% 55%;
+    --border: 217 20% 25%;
+    --input: 217 20% 25%;
+    --ring: 239 84% 67%;
 
     /* Spacing Scale */
     --spacing-1: 4px;
@@ -128,15 +130,19 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-xl;
+    @apply bg-slate-900/80 backdrop-blur-md border border-slate-800 shadow-lg;
   }
 
   .glass-card {
-    @apply bg-gradient-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-xl;
+    @apply bg-slate-900/90 backdrop-blur-md border border-slate-800 shadow-sm hover:border-slate-700 transition-all duration-200;
+  }
+
+  .ambient-glow {
+    background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12), transparent 70%);
   }
 
   .text-glow {
-    text-shadow: 0 0 20px rgba(139, 47, 201, 0.5);
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
   }
 
   .dot-grid {
