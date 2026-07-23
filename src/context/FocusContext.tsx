@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { type FocusSession, type TimerMode } from '../types';
 import { MODES } from '../constants';
 import { db } from '../lib/firebase';
@@ -36,10 +36,10 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Play Beep Function
     const playBeep = useCallback(() => {
         try {
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            if (!AudioContext) return;
+            const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+            if (!AudioCtx) return;
 
-            const ctx = new AudioContext();
+            const ctx = new AudioCtx();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
 
@@ -92,14 +92,14 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         };
     }, [user, showError]);
 
-    const clearError = () => setLastError(null);
+    const clearError = useCallback(() => setLastError(null), []);
 
-    const retryLastOperation = () => {
+    const retryLastOperation = useCallback(() => {
         if (lastFailedOperation) {
             (lastFailedOperation as () => void)();
             setLastFailedOperation(null);
         }
-    };
+    }, [lastFailedOperation]);
 
     // Save session with error handling and retry logic
     const saveSession = useCallback(async (sessionData: Omit<FocusSession, 'id'> & { userId: string }) => {
@@ -166,50 +166,69 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return () => clearInterval(interval);
     }, [isActive, timeLeft, user, mode, customMinutes, playBeep, saveSession]);
 
-    const toggleTimer = () => setIsActive(prev => !prev);
+    const toggleTimer = useCallback(() => setIsActive(prev => !prev), []);
 
-    const resetTimer = () => {
+    const resetTimer = useCallback(() => {
         setIsActive(false);
         const mins = mode === 'custom' ? customMinutes : MODES[mode].minutes;
         setTimeLeft(mins * 60);
-    };
+    }, [mode, customMinutes]);
 
-    const handleSetMode = (newMode: TimerMode) => {
+    const handleSetMode = useCallback((newMode: TimerMode) => {
         setMode(newMode);
         setIsActive(false);
         const mins = newMode === 'custom' ? customMinutes : MODES[newMode].minutes;
         setTimeLeft(mins * 60);
-    };
+    }, [customMinutes]);
 
-    const setCustomDuration = (minutes: number) => {
+    const setCustomDuration = useCallback((minutes: number) => {
         setCustomMinutes(minutes);
         if (mode === 'custom') {
             setIsActive(false);
             setTimeLeft(minutes * 60);
         }
-    };
+    }, [mode]);
 
-    const toggleFocusMode = () => setIsFocusMode(prev => !prev);
+    const toggleFocusMode = useCallback(() => setIsFocusMode(prev => !prev), []);
+
+    const contextValue = useMemo(() => ({
+        isFocusMode,
+        toggleFocusMode,
+        mode,
+        setMode: handleSetMode,
+        timeLeft,
+        isActive,
+        toggleTimer,
+        resetTimer,
+        setCustomDuration,
+        customMinutes,
+        sessionHistory,
+        isSaving,
+        lastError,
+        clearError,
+        retryLastOperation,
+        lastCompletedSession
+    }), [
+        isFocusMode,
+        toggleFocusMode,
+        mode,
+        handleSetMode,
+        timeLeft,
+        isActive,
+        toggleTimer,
+        resetTimer,
+        setCustomDuration,
+        customMinutes,
+        sessionHistory,
+        isSaving,
+        lastError,
+        clearError,
+        retryLastOperation,
+        lastCompletedSession
+    ]);
 
     return (
-        <FocusContext.Provider value={{
-            isFocusMode,
-            toggleFocusMode,
-            mode,
-            setMode: handleSetMode,
-            timeLeft,
-            isActive,
-            toggleTimer,
-            resetTimer,
-            setCustomDuration,
-            customMinutes, // Exposed
-            sessionHistory,
-            isSaving,
-            lastError,
-            clearError,
-            retryLastOperation,
-            lastCompletedSession
-        }}>
+        <FocusContext.Provider value={contextValue}>
             {children}
         </FocusContext.Provider>
     );

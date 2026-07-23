@@ -59,26 +59,27 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   className = '',
 }) => {
   const config = type ? illustrations[type] : null;
-  
-  const getIcon = () => {
-    if (icon) {
-      switch (icon) {
-        case 'coffee': return Coffee;
-        case 'sparkles': return Sparkles;
-        case 'check': return CheckSquare;
-        case 'chart': return BarChart3;
-        case 'clock': return Clock;
-        case 'calendar': default: return Calendar;
-      }
-    }
-    return config?.icon || Calendar;
-  };
 
-  const IconComponent = getIcon();
   const displayTitle = title || config?.title || 'No data';
   const displayDescription = description || config?.description || '';
   const finalActionLabel = actionLabel || action?.label || config?.actionLabel;
   const finalActionClick = onAction || action?.onClick;
+
+  const renderIcon = () => {
+    const iconProps = { className: "text-primary w-10 h-10" };
+    if (icon) {
+      switch (icon) {
+        case 'coffee': return <Coffee {...iconProps} />;
+        case 'sparkles': return <Sparkles {...iconProps} />;
+        case 'check': return <CheckSquare {...iconProps} />;
+        case 'chart': return <BarChart3 {...iconProps} />;
+        case 'clock': return <Clock {...iconProps} />;
+        case 'calendar': default: return <Calendar {...iconProps} />;
+      }
+    }
+    const FallbackIcon = config?.icon || Calendar;
+    return <FallbackIcon {...iconProps} />;
+  };
 
   return (
     <motion.div
@@ -93,7 +94,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         transition={{ delay: 0.1 }}
         className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6"
       >
-        <IconComponent className="text-primary w-10 h-10" />
+        {renderIcon()}
       </motion.div>
 
       <motion.h3

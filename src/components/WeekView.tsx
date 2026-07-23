@@ -52,10 +52,10 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
     }, [checkScroll]);
 
     // Get date for selected day based on current week start
-    const getDayDate = (day: DayOfWeek) => {
+    const getDayDate = useCallback((day: DayOfWeek) => {
         const dayIndex = DAYS.indexOf(day);
         return addDays(currentWeekStart, dayIndex);
-    };
+    }, [currentWeekStart]);
 
     // Quick select functions
     const selectToday = () => {
@@ -118,7 +118,7 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
         [entries, selectedDay]
     );
 
-    const selectedDate = useMemo(() => getDayDate(selectedDay), [selectedDay, currentWeekStart]);
+    const selectedDate = useMemo(() => getDayDate(selectedDay), [selectedDay, getDayDate]);
     const isTodaySelected = isToday(selectedDate);
 
     // Helper — pure function, no deps, defined once
@@ -152,7 +152,7 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
                 status: getClassCountStatus(count)
             };
         });
-    }, [entries, currentWeekStart, dayCountMap]);
+    }, [currentWeekStart, dayCountMap]);
 
     // Handle day selection with animation
     const handleDaySelect = (day: DayOfWeek) => {

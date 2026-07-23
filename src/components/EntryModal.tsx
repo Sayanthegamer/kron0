@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { TimeTableEntry, DayOfWeek } from '../types';
 import { X, Trash2, AlertCircle } from 'lucide-react';
@@ -30,14 +30,13 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-    // Reset form when modal opens
-    useEffect(() => {
-        if (!isOpen) return;
+    const [prevKey, setPrevKey] = useState<string>('');
 
-        if (initialData) {
-            setFormData(initialData);
-        } else {
-            setFormData({
+    const currentKey = isOpen ? `${isOpen}-${initialData?.id || 'new'}-${defaultDay || ''}` : 'closed';
+    if (currentKey !== prevKey) {
+        setPrevKey(currentKey);
+        if (isOpen) {
+            setFormData(initialData ? { ...initialData } : {
                 days: defaultDay ? [defaultDay] : ['Monday'],
                 startTime: '09:00',
                 endTime: '10:00',
@@ -45,10 +44,10 @@ export const EntryModal: React.FC<EntryModalProps> = ({ isOpen, onClose, onSave,
                 location: '',
                 color: '#3b82f6'
             });
+            setErrors({});
+            setTouched({});
         }
-        setErrors({});
-        setTouched({});
-    }, [isOpen, initialData, defaultDay]);
+    }
 
     const validateField = (name: string, value: string | string[] | undefined) => {
         switch (name) {
