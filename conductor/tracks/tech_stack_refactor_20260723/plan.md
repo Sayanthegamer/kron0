@@ -11,16 +11,16 @@ Systematic refactoring of Kron0 to eliminate AI UI anti-patterns, consolidate du
   - [x] Update `Layout.tsx` navigation links to use router navigation hooks/links
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 2: Component & Context Consolidation (De-AI-Slopification Part 1)
-- [ ] Task: Merge Duplicate Components
-  - [ ] Consolidate `EmptyStateEnhanced.tsx` into `EmptyState.tsx` and update imports
-  - [ ] Consolidate `LiveBadge.tsx` and `LiveIndicator.tsx` into `StatusIndicator.tsx` and update imports
-  - [ ] Remove deleted duplicate component files from project tree
-- [ ] Task: Prune Context Boilerplate & Dead Code
-  - [ ] Consolidate interface definitions from `src/context/definitions/` into `src/types/`
-  - [ ] Delete redundant `src/context/definitions/` folder
-  - [ ] Clean up commented-out code and unused imports across `src/`
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+## Phase 2: Component & Context Consolidation (De-AI-Slopification Part 1) [checkpoint: a60fd69]
+- [x] Task: Merge Duplicate Components
+  - [x] Consolidate `EmptyStateEnhanced.tsx` into `EmptyState.tsx` and update imports
+  - [x] Consolidate `LiveBadge.tsx` and `LiveIndicator.tsx` into `StatusIndicator.tsx` and update imports
+  - [x] Remove deleted duplicate component files from project tree
+- [x] Task: Prune Context Boilerplate & Dead Code
+  - [x] Consolidate interface definitions from `src/context/definitions/` into `src/types/`
+  - [x] Delete redundant `src/context/definitions/` folder
+  - [x] Clean up commented-out code and unused imports across `src/`
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Visual Quality & UI Anti-Pattern Cleanup (De-AI-Slopification Part 2)
 - [ ] Task: Refactor CSS Animations & Easing Curves (`impeccable`)
