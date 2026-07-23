@@ -22,16 +22,16 @@ Systematic refactoring of Kron0 to eliminate AI UI anti-patterns, consolidate du
   - [x] Clean up commented-out code and unused imports across `src/`
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 3: Visual Quality & UI Anti-Pattern Cleanup (De-AI-Slopification Part 2)
-- [ ] Task: Refactor CSS Animations & Easing Curves (`impeccable`)
-  - [ ] Replace `bounce-float`, `micro-bounce`, `fab-bounce`, and spring bezier curves in `index.css` with exponential deceleration
-  - [ ] Remove `codex-grid-background` hairline tiled background from `index.css`
-  - [ ] Remove thick side-tab colored borders in `Layout.tsx` and `index.css`
-- [ ] Task: Refactor Color Palette & Heading Typography
-  - [ ] Replace generic purple/cyan/violet gradients in `CelebrationOverlay.tsx`, `FocusMode.tsx`, `Dashboard.tsx`, `LandingPage.tsx` with cohesive, intentional color system
-  - [ ] Replace `bg-clip-text` gradient text on headings with clean solid typography
-  - [ ] Run `npx impeccable detect src/` to verify zero anti-patterns remain
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+## Phase 3: Visual Quality & UI Anti-Pattern Cleanup (De-AI-Slopification Part 2) [checkpoint: 3a7ddcd]
+- [x] Task: Refactor CSS Animations & Easing Curves (`impeccable`)
+  - [x] Replace `bounce-float`, `micro-bounce`, `fab-bounce`, and spring bezier curves in `index.css` with exponential deceleration
+  - [x] Remove `codex-grid-background` hairline tiled background from `index.css`
+  - [x] Remove thick side-tab colored borders in `Layout.tsx` and `index.css`
+- [x] Task: Refactor Color Palette & Heading Typography
+  - [x] Replace generic purple/cyan/violet gradients in `CelebrationOverlay.tsx`, `FocusMode.tsx`, `Dashboard.tsx`, `LandingPage.tsx` with cohesive, intentional color system
+  - [x] Replace `bg-clip-text` gradient text on headings with clean solid typography
+  - [x] Run `npx impeccable detect src/` to verify zero anti-patterns remain
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 4: State Re-render & Performance Optimization
 - [ ] Task: Decouple High-Frequency Focus Timer Ticks
