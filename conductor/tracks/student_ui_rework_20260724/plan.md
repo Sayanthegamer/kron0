@@ -23,10 +23,10 @@
   - [x] Refactor `TodoWidget` and `StatsWidget` card surfaces and progress bars
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 4: Focus Mode UI & Final Quality Audit
-- [ ] Task: Redesign Focus Mode UI (`src/pages/FocusMode.tsx`)
-  - [ ] Update Pomodoro timer ring, mode selector pills, and session control buttons
-- [ ] Task: Quality Audit & Verification
-  - [ ] Run `npx impeccable detect src/` to verify zero anti-patterns
-  - [ ] Run `npm run lint` and `npm run build` to confirm zero errors
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+## Phase 4: Focus Mode UI & Final Quality Audit [checkpoint: ede8d25]
+- [x] Task: Redesign Focus Mode UI (`src/pages/FocusMode.tsx`)
+  - [x] Update Pomodoro timer ring, mode selector pills, and session control buttons
+- [x] Task: Quality Audit & Verification
+  - [x] Run `npx impeccable detect src/` to verify zero anti-patterns
+  - [x] Run `npm run lint` and `npm run build` to confirm zero errors
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
