@@ -44,40 +44,40 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
             />
 
             {/* Header */}
-            <header className="px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-                <div className="flex items-center gap-2">
+            <header className="px-6 py-4 flex justify-between items-center sticky top-0 z-10 bg-slate-950/60 backdrop-blur-md border-b border-slate-800/50">
+                <div className="flex items-center gap-3">
                     <motion.div 
-                        className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20"
+                        className="w-9 h-9 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center shadow-sm"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
-                        <span className="text-white text-lg">⏳</span>
+                        <span className="text-primary font-bold text-base">K0</span>
                     </motion.div>
-                    <h1 className="text-xl font-bold tracking-tight text-glow">Kron0</h1>
+                    <h1 className="text-lg font-bold tracking-tight text-slate-100">Kron0</h1>
                 </div>
                 {user && (
-                    <div className="flex items-center gap-3 bg-black/20 backdrop-blur-xl border border-white/10 rounded-full p-1.5 pr-1.5 shadow-xl hover-lift">
+                    <div className="flex items-center gap-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-full p-1.5 shadow-md">
                         {/* User Profile Trigger for Settings */}
                         <motion.div
                             id="user-profile-trigger"
                             onClick={() => setIsSettingsOpen(true)}
-                            className="flex items-center gap-3 cursor-pointer rounded-full pl-2 pr-2 py-1 transition-smooth focus-ring"
-                            whileHover={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                            className="flex items-center gap-3 cursor-pointer rounded-full pl-2 pr-2 py-1 transition-smooth focus-ring hover:bg-slate-800/50"
+                            whileHover={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
                             whileTap={{ scale: 0.98 }}
                         >
                             <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xs shadow-inner">
                                 {user.displayName ? user.displayName[0].toUpperCase() : user.email?.[0].toUpperCase()}
                             </div>
                             <div className="flex flex-col items-start hidden sm:flex">
-                                <span className="text-xs font-semibold leading-none">{user.displayName || 'User'}</span>
+                                <span className="text-xs font-semibold leading-none text-slate-200">{user.displayName || 'User'}</span>
                                 <span className="text-xs text-muted-foreground leading-none scale-90 origin-left mt-0.5">Settings</span>
                             </div>
                         </motion.div>
-                        <div className="w-px h-6 bg-border mx-1" />
+                        <div className="w-px h-6 bg-slate-800 mx-1" />
                         <motion.button
                             onClick={logout}
-                            className="p-1.5 rounded-full hover:bg-red-500/10 hover:text-red-500 text-muted-foreground transition-smooth focus-ring"
+                            className="p-1.5 rounded-full hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-smooth focus-ring"
                             title="Sign out"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -120,7 +120,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                         stiffness: 300,
                         damping: 30
                     }}
-                    className={`bg-black/30 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-2xl flex md:flex-col items-center gap-1 pointer-events-auto hover-lift ${isMobile ? 'gap-0.5' : 'gap-2'}`}
+                    className={`bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl p-2 shadow-xl flex md:flex-col items-center gap-1 pointer-events-auto ${isMobile ? 'gap-0.5' : 'gap-2'}`}
                     whileHover={{ scale: 1.02 }}
                 >
 
@@ -154,16 +154,14 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                     <motion.button
                         id="nav-add-btn"
                         whileHover={{ 
-                            scale: 1.1,
-                            rotate: 5,
-                            boxShadow: '0 0 30px rgba(139, 47, 201, 0.5)'
+                            scale: 1.08,
+                            boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)'
                         }}
                         whileTap={{ 
-                            scale: 0.9,
-                            rotate: -5
+                            scale: 0.94
                         }}
                         onClick={onAddClick}
-                        className={`mx-1 md:mx-0 md:my-2 bg-gradient-to-r from-primary to-purple-600 text-white rounded-xl shadow-lg shadow-primary/40 border border-white/20 focus-ring ${isMobile ? 'p-2.5' : 'p-3.5'}`}
+                        className={`mx-1 md:mx-0 md:my-2 bg-primary text-primary-foreground font-semibold rounded-xl shadow-md border border-primary/40 focus-ring ${isMobile ? 'p-2.5' : 'p-3.5'}`}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
                         <Plus size={isMobile ? 20 : 24} />
@@ -290,13 +288,13 @@ const NavButton: React.FC<NavButtonProps> = ({
                     <>
                         <motion.div
                             layoutId="nav-glow"
-                            className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-xl"
+                            className="absolute inset-0 bg-primary/10 rounded-xl"
                             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                            style={{ filter: 'blur(10px)' }}
+                            style={{ filter: 'blur(6px)' }}
                         />
                         <motion.div
                             layoutId="nav-pill"
-                            className="absolute inset-0 bg-white/10 rounded-xl border border-white/20"
+                            className="absolute inset-0 bg-primary/20 rounded-xl border border-primary/30"
                             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                         />
                     </>
