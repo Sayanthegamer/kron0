@@ -64,14 +64,36 @@ const OnboardingTour = React.lazy(() =>
     })
 );
 
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+
 const AppContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'week' | 'focus' | 'stats'>('dashboard');
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<TimeTableEntry | null>(null);
 
   const { addEntry, updateEntry, deleteEntry } = useTimetable();
 
   useNotifications();
+
+  const getActiveTab = (): 'dashboard' | 'week' | 'focus' | 'stats' => {
+    switch (location.pathname) {
+      case '/week': return 'week';
+      case '/focus': return 'focus';
+      case '/stats': return 'stats';
+      default: return 'dashboard';
+    }
+  };
+
+  const handleTabChange = (tab: 'dashboard' | 'week' | 'focus' | 'stats') => {
+    const routes = {
+      dashboard: '/',
+      week: '/week',
+      focus: '/focus',
+      stats: '/stats',
+    };
+    navigate(routes[tab]);
+  };
 
   const handleSave = (entry: TimeTableEntry | Omit<TimeTableEntry, 'id'>) => {
     if ('id' in entry) {
@@ -92,22 +114,23 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <Layout activeTab={activeTab} onTabChange={setActiveTab} onAddClick={handleAddClick}>
+    <Layout activeTab={getActiveTab()} onTabChange={handleTabChange} onAddClick={handleAddClick}>
       <Suspense fallback={
         <div className="flex items-center justify-center p-12">
           <Loader2 className="w-6 h-6 text-primary animate-spin" />
         </div>
       }>
-        {activeTab === 'dashboard' && (
-          <Dashboard onEntryClick={handleEditClick} onAddEntry={handleAddClick} />
-        )}
-        {activeTab === 'week' && <WeekView onEntryClick={handleEditClick} />}
-        {activeTab === 'focus' && <FocusMode />}
-        {activeTab === 'stats' && (
-          <div className="pt-4 space-y-4">
-            <StatsWidget />
-          </div>
-        )}
+        <Routes>
+          <Route path="/" element={<Dashboard onEntryClick={handleEditClick} onAddEntry={handleAddClick} />} />
+          <Route path="/week" element={<WeekView onEntryClick={handleEditClick} />} />
+          <Route path="/focus" element={<FocusMode />} />
+          <Route path="/stats" element={
+            <div className="pt-4 space-y-4">
+              <StatsWidget />
+            </div>
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Suspense>
 
       <EntryModal
