@@ -37,17 +37,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             </div>
 
             {/* Premium Navbar */}
-            <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-white/5 bg-[#020203]/40">
+            {/* Header / Nav */}
+            <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-slate-800/60 bg-slate-950/60">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
                     <motion.div 
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         className="flex items-center gap-3 font-extrabold text-2xl tracking-tighter"
                     >
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-purple-500 to-secondary flex items-center justify-center shadow-lg shadow-primary/20 rotate-3">
-                            <Layers className="text-white w-6 h-6" />
+                        <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold shadow-sm">
+                            K0
                         </div>
-                        <span className="text-white">
+                        <span className="text-slate-100 font-bold text-xl">
                             Kron0
                         </span>
                     </motion.div>
@@ -57,7 +58,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                         <a href="#workflow" className="hover:text-primary transition-colors">Workflow</a>
                         <button 
                             onClick={onGetStarted}
-                            className="px-5 py-2.5 rounded-full bg-white text-black hover:bg-white/90 transition-all font-semibold"
+                            className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-semibold shadow-sm"
                         >
                             Log In
                         </button>
@@ -76,37 +77,36 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5 }}
-                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary mb-8 tracking-wider uppercase"
+                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-xs font-bold text-primary mb-8 tracking-wider uppercase"
                         >
-                            <Sparkles size={14} className="animate-pulse" /> v2.0 Performance Update
+                            <Sparkles size={14} className="animate-pulse" /> Student Productivity Suite
                         </motion.div>
                         
-                        <h1 className="text-5xl md:text-8xl font-[900] tracking-tighter leading-[0.9] mb-8 max-w-5xl">
-                            <span className="text-white">
-                                The high-performance 
+                        <h1 className="text-4xl md:text-7xl font-[900] tracking-tighter leading-[1.05] mb-8 max-w-5xl">
+                            <span className="text-slate-100">
+                                Master Your Semester
                             </span>
                             <br />
-                            <span className="text-glow text-primary italic">productivity</span> engine.
+                            <span className="text-primary italic">without the Chaos</span>.
                         </h1>
                         
-                        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
-                            A beautifully engineered terminal for your time. Optimize classes, deep-work sessions, and daily targets with military precision.
+                        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
+                            The intelligent timetable, pomodoro focus tracker, and task dashboard designed specifically for college and university students.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center gap-4 mb-24">
                             <motion.button
-                                whileHover={{ scale: 1.05 }}
+                                whileHover={{ scale: 1.04 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={onGetStarted}
-                                className="group relative px-10 py-5 bg-primary text-white font-black rounded-2xl shadow-2xl shadow-primary/30 overflow-hidden text-lg"
+                                className="group relative px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg shadow-primary/20 overflow-hidden text-base"
                             >
-                                <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                                 <span className="relative flex items-center gap-3">
-                                    Start Crafting <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                    Get Started Free <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                 </span>
                             </motion.button>
-                            <button className="flex items-center gap-2 px-8 py-5 text-muted-foreground hover:text-white transition-colors font-bold">
-                                <MousePointer2 size={18} /> View Demo
+                            <button onClick={onGetStarted} className="flex items-center gap-2 px-6 py-4 text-muted-foreground hover:text-slate-200 transition-colors font-semibold">
+                                <MousePointer2 size={18} /> Explore Features
                             </button>
                         </div>
                     </motion.div>

@@ -25,11 +25,11 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
         switch (status) {
             case 'current':
                 return {
-                    borderColor: 'border-primary',
-                    glow: 'shadow-[0_0_20px_-5px_var(--primary)]',
+                    borderColor: 'border-primary/60',
+                    glow: 'shadow-md shadow-primary/10',
                     badge: (
                         <motion.div 
-                            className="px-2 py-1 rounded-full bg-primary/20 border border-primary/50 text-[10px] font-bold text-primary uppercase tracking-wider animate-pulse-glow"
+                            className="px-2 py-0.5 rounded-full bg-primary/20 border border-primary/40 text-[10px] font-bold text-primary uppercase tracking-wider"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: "spring", stiffness: 500, damping: 15 }}
@@ -37,15 +37,15 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
                             Now
                         </motion.div>
                     ),
-                    gradient: 'from-primary/10 to-purple-500/10',
+                    gradient: 'from-primary/15 to-primary/5',
                 };
             case 'next':
                 return {
-                    borderColor: 'border-secondary',
-                    glow: 'shadow-[0_0_20px_-5px_var(--secondary)]',
+                    borderColor: 'border-teal-500/60',
+                    glow: 'shadow-md shadow-teal-500/10',
                     badge: (
                         <motion.div 
-                            className="px-2 py-1 rounded-full bg-secondary/20 border border-secondary/50 text-[10px] font-bold text-secondary uppercase tracking-wider"
+                            className="px-2 py-0.5 rounded-full bg-teal-500/20 border border-teal-500/40 text-[10px] font-bold text-teal-400 uppercase tracking-wider"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: "spring", stiffness: 500, damping: 15 }}
@@ -53,11 +53,11 @@ export const ClassCard: React.FC<ClassCardProps> = ({ entry, status, onClick }) 
                             Next
                         </motion.div>
                     ),
-                    gradient: 'from-secondary/10 to-cyan-400/10',
+                    gradient: 'from-teal-500/15 to-teal-500/5',
                 };
             case 'past':
                 return {
-                    borderColor: 'border-border opacity-60',
+                    borderColor: 'border-slate-800 opacity-60',
                     glow: '',
                     badge: (
                         <motion.div 
