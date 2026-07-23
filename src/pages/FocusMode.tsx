@@ -76,27 +76,27 @@ export const FocusMode: React.FC = () => {
     const modeConfig = {
         focus: {
             icon: <Target size={16} />,
-            bgGradient: 'from-primary/20 to-purple-600/10',
+            bgGradient: 'from-primary/10 to-transparent',
             borderGlow: 'glow-focus',
             textGlow: 'text-primary'
         },
         short: {
             icon: <Coffee size={16} />,
-            bgGradient: 'from-teal-600/20 to-cyan-600/10',
+            bgGradient: 'from-teal-500/10 to-transparent',
             borderGlow: 'glow-break',
-            textGlow: 'text-teal-500'
+            textGlow: 'text-teal-400'
         },
         long: {
             icon: <Wind size={16} />,
-            bgGradient: 'from-blue-600/20 to-secondary/10',
+            bgGradient: 'from-indigo-500/10 to-transparent',
             borderGlow: 'glow-long-break',
-            textGlow: 'text-secondary'
+            textGlow: 'text-indigo-400'
         },
         custom: {
             icon: <Settings2 size={16} />,
-            bgGradient: 'from-pink-600/20 to-rose-600/10',
+            bgGradient: 'from-sky-500/10 to-transparent',
             borderGlow: 'glow-custom',
-            textGlow: 'text-pink-500'
+            textGlow: 'text-sky-400'
         }
     };
 
@@ -105,7 +105,7 @@ export const FocusMode: React.FC = () => {
     const secondsChanged = secs !== (formatTime(prevSeconds).secs);
 
     return (
-        <div className={`flex flex-col items-center justify-center p-6 space-y-8 h-full min-h-[70vh] relative overflow-hidden transition-all duration-500 bg-gradient-to-b ${config.bgGradient}`}>
+        <div className="flex flex-col items-center justify-center p-6 space-y-8 h-full min-h-[70vh] relative overflow-hidden transition-all duration-500 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-lg">
 
             {/* Floating Particles Background */}
             <FloatingParticles isActive={isActive} modeColor={mode === 'focus' ? '#8b2fc9' : mode === 'short' ? '#14b8a6' : mode === 'long' ? '#6366f1' : '#ec4899'} />

@@ -77,7 +77,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                         <div className="w-px h-6 bg-slate-800 mx-1" />
                         <motion.button
                             onClick={logout}
-                            className="p-1.5 rounded-full hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-smooth focus-ring"
+                            className="p-1.5 rounded-full hover:bg-slate-800 text-slate-300 hover:text-white transition-smooth focus-ring"
                             title="Sign out"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
