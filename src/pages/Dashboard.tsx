@@ -115,7 +115,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }
                         </motion.div>
                         
                         <motion.h2 
-                            className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary animate-entrance gradient-shimmer"
+                            className="text-3xl md:text-4xl font-extrabold text-foreground animate-entrance"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ 

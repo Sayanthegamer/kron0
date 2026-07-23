@@ -32,7 +32,7 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
     const modeColors = {
         focus: {
             primary: '#8b2fc9',
-            gradient: 'from-violet-600 to-purple-600'
+            gradient: 'from-primary to-purple-600'
         },
         short: {
             primary: '#14b8a6',
@@ -40,7 +40,7 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
         },
         long: {
             primary: '#6366f1',
-            gradient: 'from-indigo-600 to-violet-600'
+            gradient: 'from-blue-600 to-purple-600'
         },
         custom: {
             primary: '#ec4899',
@@ -80,9 +80,9 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
                                     ease: 'easeInOut',
                                     times: [0, 0.5, 1]
                                 }}
-                                className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-orange-500/30"
+                                className="w-32 h-32 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-primary/20"
                             >
-                                <Trophy className="text-white w-16 h-16" />
+                                <Trophy className="text-primary w-16 h-16" />
                             </motion.div>
 
                             {/* Main celebration message */}
@@ -90,7 +90,7 @@ export const CelebrationOverlay: React.FC<CelebrationOverlayProps> = ({
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.3, duration: 0.5 }}
-                                className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent"
+                                className="text-4xl md:text-5xl font-bold mb-3 text-foreground"
                             >
                                 Session Complete!
                             </motion.h2>

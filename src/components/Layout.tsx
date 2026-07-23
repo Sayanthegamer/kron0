@@ -66,7 +66,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                             whileHover={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
                             whileTap={{ scale: 0.98 }}
                         >
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs shadow-inner">
+                            <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-xs shadow-inner">
                                 {user.displayName ? user.displayName[0].toUpperCase() : user.email?.[0].toUpperCase()}
                             </div>
                             <div className="flex flex-col items-start hidden sm:flex">
@@ -350,7 +350,7 @@ const NavButton: React.FC<NavButtonProps> = ({
                                 className="absolute left-full ml-4 top-1/2 transform -translate-y-1/2 bg-black/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-lg whitespace-nowrap border border-white/10 shadow-lg z-50 flex items-center"
                             >
                                 {label}
-                                <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-black/80" />
+                                <div className="absolute right-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-b-[4px] border-r-[6px] border-transparent border-r-black/80" />
                             </motion.div>
                         )}
                     </AnimatePresence>

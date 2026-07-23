@@ -47,7 +47,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-purple-500 to-secondary flex items-center justify-center shadow-lg shadow-primary/20 rotate-3">
                             <Layers className="text-white w-6 h-6" />
                         </div>
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
+                        <span className="text-white">
                             Kron0
                         </span>
                     </motion.div>
@@ -82,7 +82,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                         </motion.div>
                         
                         <h1 className="text-5xl md:text-8xl font-[900] tracking-tighter leading-[0.9] mb-8 max-w-5xl">
-                            <span className="bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40">
+                            <span className="text-white">
                                 The high-performance 
                             </span>
                             <br />

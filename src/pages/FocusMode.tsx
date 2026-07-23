@@ -76,7 +76,7 @@ export const FocusMode: React.FC = () => {
     const modeConfig = {
         focus: {
             icon: <Target size={16} />,
-            bgGradient: 'from-violet-600/20 to-purple-600/10',
+            bgGradient: 'from-primary/20 to-purple-600/10',
             borderGlow: 'glow-focus',
             textGlow: 'text-primary'
         },
@@ -88,9 +88,9 @@ export const FocusMode: React.FC = () => {
         },
         long: {
             icon: <Wind size={16} />,
-            bgGradient: 'from-indigo-600/20 to-violet-600/10',
+            bgGradient: 'from-blue-600/20 to-secondary/10',
             borderGlow: 'glow-long-break',
-            textGlow: 'text-indigo-500'
+            textGlow: 'text-secondary'
         },
         custom: {
             icon: <Settings2 size={16} />,
