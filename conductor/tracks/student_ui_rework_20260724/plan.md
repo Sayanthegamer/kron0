@@ -7,12 +7,12 @@
   - [x] Add soft ambient background glow radial gradients (`ambient-glow`)
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 2: Navigation, Layout & Buttons Rework
-- [ ] Task: Refactor Navigation & Layout (`src/components/Layout.tsx`)
-  - [ ] Rework sidebar navigation with clean active tab pills and crisp icons
-  - [ ] Redesign header user avatar, status badges, and quick controls
-  - [ ] Update primary and secondary action button styles across app
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+## Phase 2: Navigation, Layout & Buttons Rework [checkpoint: 2a5b33f]
+- [x] Task: Refactor Navigation & Layout (`src/components/Layout.tsx`)
+  - [x] Rework sidebar navigation with clean active tab pills and crisp icons
+  - [x] Redesign header user avatar, status badges, and quick controls
+  - [x] Update primary and secondary action button styles across app
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 3: Landing Page & Dashboard Widgets Redesign
 - [ ] Task: Rework Landing Page (`src/pages/LandingPage.tsx`)
