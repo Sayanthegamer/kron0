@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar } from 'lucide-react';
 import { format, isToday } from 'date-fns';
-import type { DayOfWeek } from '../types';
+import type { DayOfWeek, TimeTableEntry } from '../types';
 import { useTimetable } from '../hooks/useTimetable';
 
 interface WeekOverviewProps {
@@ -18,7 +18,7 @@ export const WeekOverview: React.FC<WeekOverviewProps> = ({ selectedDay, onDaySe
     const DAYS: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     const getDayCount = (day: DayOfWeek) => {
-        return entries.filter(e => e.days.includes(day)).length;
+        return entries.filter((e: TimeTableEntry) => e.days.includes(day)).length;
     };
 
     const getDayStatus = (count: number) => {

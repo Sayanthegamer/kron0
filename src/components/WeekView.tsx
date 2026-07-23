@@ -113,8 +113,8 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
     // Memoized — only recomputes when entries or selectedDay changes, not on every render
     const dayEntries = useMemo(() =>
         entries
-            .filter(e => e.days.includes(selectedDay))
-            .sort((a, b) => a.startTime.localeCompare(b.startTime)),
+            .filter((e: TimeTableEntry) => e.days.includes(selectedDay))
+            .sort((a: TimeTableEntry, b: TimeTableEntry) => a.startTime.localeCompare(b.startTime)),
         [entries, selectedDay]
     );
 
@@ -131,7 +131,7 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
     // Precomputed count per day — replaces 7x entries.filter() calls inside JSX map
     const dayCountMap = useMemo(() =>
         Object.fromEntries(
-            DAYS.map(day => [day, entries.filter(e => e.days.includes(day)).length])
+            DAYS.map(day => [day, entries.filter((e: TimeTableEntry) => e.days.includes(day)).length])
         ) as Record<DayOfWeek, number>,
         [entries]
     );
@@ -493,7 +493,7 @@ export const WeekView: React.FC<WeekViewProps> = ({ onEntryClick, onAddEntry }) 
                 <div className="space-y-3 pb-24">
                     <AnimatePresence mode="popLayout">
                         {dayEntries.length > 0 ? (
-                            dayEntries.map((entry, index) => (
+                            dayEntries.map((entry: TimeTableEntry, index: number) => (
                                 <motion.div
                                     key={`${entry.id}-${selectedDay}`}
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}

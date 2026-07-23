@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { FocusContext } from '../context/definitions/FocusContextDefinition';
+import { FocusContext } from '../context/FocusContext';
 
 export const useFocus = () => {
     const context = useContext(FocusContext);

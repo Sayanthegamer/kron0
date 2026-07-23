@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTodo } from '../hooks/useTodo';
+import type { TodoItem } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, AlertCircle, TrendingUp, Trophy } from 'lucide-react';
 import { RetryOperation } from './ErrorBoundary';
@@ -15,7 +16,7 @@ export const TodoWidget: React.FC = () => {
     const [showConfetti, setShowConfetti] = useState(false);
     const prevCompletedCountRef = React.useRef(0);
 
-    const completedCount = todos.filter(t => t.completed).length;
+    const completedCount = todos.filter((t: TodoItem) => t.completed).length;
     const totalCount = todos.length;
     const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
@@ -34,19 +35,19 @@ export const TodoWidget: React.FC = () => {
         prevCompletedCountRef.current = completedCount;
     }, [completedCount, totalCount]);
 
-    const filteredTodos = todos.filter(todo => {
+    const filteredTodos = todos.filter((todo: TodoItem) => {
         if (filter === 'active') return !todo.completed;
         if (filter === 'completed') return todo.completed;
         return true;
     });
 
     // Custom sort: Uncompleted first, then by date
-    const sortedTodos = [...filteredTodos].sort((a, b) => {
+    const sortedTodos = [...filteredTodos].sort((a: TodoItem, b: TodoItem) => {
         if (a.completed === b.completed) return b.createdAt - a.createdAt;
         return a.completed ? 1 : -1;
     });
 
-    const remainingTodos = todos.filter(t => !t.completed).length;
+    const remainingTodos = todos.filter((t: TodoItem) => !t.completed).length;
 
     return (
         <motion.div 

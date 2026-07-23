@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { DayOfWeek } from '../types';
+import type { DayOfWeek, TimeTableEntry } from '../types';
 import { useTimetable } from '../hooks/useTimetable';
 
 interface ClassCountBadgeProps {
@@ -10,7 +10,7 @@ interface ClassCountBadgeProps {
 
 export const ClassCountBadge: React.FC<ClassCountBadgeProps> = ({ day, isToday }) => {
     const { entries } = useTimetable();
-    const count = entries.filter(e => e.days.includes(day)).length;
+    const count = entries.filter((e: TimeTableEntry) => e.days.includes(day)).length;
 
     const getStatus = () => {
         if (count === 0) return 'no-class';

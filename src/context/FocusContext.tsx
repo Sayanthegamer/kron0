@@ -6,7 +6,10 @@ import { collection, addDoc, orderBy } from 'firebase/firestore';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
-import { FocusContext } from './definitions/FocusContextDefinition';
+import { createContext } from 'react';
+import type { FocusContextType } from '../types';
+
+export const FocusContext = createContext<FocusContextType | undefined>(undefined);
 import { listenToUserCollection } from '../lib/firestore';
 
 const HISTORY_COLLECTION = 'focus_history';

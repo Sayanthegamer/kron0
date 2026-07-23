@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { TodoContext } from '../context/definitions/TodoContextDefinition';
+import { TodoContext } from '../context/TodoContext';
 
 export const useTodo = () => {
     const context = useContext(TodoContext);

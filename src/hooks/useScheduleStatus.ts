@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTimetable } from './useTimetable';
-import type { DayOfWeek } from '../types';
+import type { TimeTableEntry, DayOfWeek } from '../types';
 import { isWithinInterval, parse, getDay } from 'date-fns';
 
 import { useMemo } from 'react';
@@ -20,10 +20,10 @@ export function useScheduleStatus() {
         const currentDayName = days[getDay(now)];
 
         // 2. Filter entries for today
-        const todayEntries = entries.filter(e => e.days.includes(currentDayName));
+        const todayEntries = entries.filter((e: TimeTableEntry) => e.days.includes(currentDayName));
 
         // 3. Find current class
-        const current = todayEntries.find(entry => {
+        const current = todayEntries.find((entry: TimeTableEntry) => {
             const start = parse(entry.startTime, 'HH:mm', now);
             const end = parse(entry.endTime, 'HH:mm', now);
             return isWithinInterval(now, { start, end });

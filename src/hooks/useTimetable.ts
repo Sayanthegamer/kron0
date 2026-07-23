@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { TimetableContext } from '../context/definitions/TimetableContextDefinition';
+import { TimetableContext } from '../context/TimetableContext';
 
 export const useTimetable = () => {
     const context = useContext(TimetableContext);

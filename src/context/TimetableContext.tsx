@@ -5,7 +5,10 @@ import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestor
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
-import { TimetableContext } from './definitions/TimetableContextDefinition';
+import { createContext } from 'react';
+import type { TimetableContextType } from '../types';
+
+export const TimetableContext = createContext<TimetableContextType | undefined>(undefined);
 import { listenToUserCollection } from '../lib/firestore';
 
 const ENTRIES_COLLECTION = 'entries';

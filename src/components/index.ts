@@ -7,7 +7,6 @@ export { TimeGrid } from './TimeGrid';
 export { DateDisplay } from './DateDisplay';
 export { ClassCountBadge } from './ClassCountBadge';
 export { AnimatedDayPill } from './AnimatedDayPill';
-export { LiveIndicator } from './LiveIndicator';
 export { EmptyTimeSlot } from './EmptyTimeSlot';
 export { WeekOverview } from './WeekOverview';
 
@@ -38,7 +37,6 @@ export { ErrorBoundary, ErrorState, LoadingState, RetryOperation } from './Error
 
 // Empty States
 export { EmptyState } from './EmptyState';
-export { EmptyStateEnhanced } from './EmptyStateEnhanced';
 
 // Effects
 export { FloatingParticles } from './FloatingParticles';

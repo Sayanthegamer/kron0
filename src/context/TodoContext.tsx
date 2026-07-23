@@ -5,7 +5,10 @@ import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestor
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { getErrorMessage, logError, retryWithBackoff, isRetriableError } from '../lib/errors';
-import { TodoContext } from './definitions/TodoContextDefinition';
+import { createContext } from 'react';
+import type { TodoContextType } from '../types';
+
+export const TodoContext = createContext<TodoContextType | undefined>(undefined);
 import { listenToUserCollection } from '../lib/firestore';
 
 const TODOS_COLLECTION = 'todos';

@@ -10,7 +10,10 @@ import {
 import type { User } from 'firebase/auth';
 import { getErrorMessage, logError } from '../lib/errors';
 import { useToast } from '../hooks/useToast';
-import { AuthContext } from './definitions/AuthContextDefinition';
+import { createContext } from 'react';
+import type { AuthContextType } from '../types/auth';
+
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 import {
     emailSignInLimiter,
     emailSignUpLimiter,

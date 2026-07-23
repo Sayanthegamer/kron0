@@ -8,7 +8,7 @@ import { QuickAddButton } from '../components/QuickAddButton';
 import { SectionDivider } from '../components/SectionDivider';
 import { StaggeredList } from '../components/StaggeredList';
 import { ClassCardSkeleton } from '../components/SkeletonLoader';
-import { EmptyStateEnhanced } from '../components/EmptyStateEnhanced';
+import { EmptyState } from '../components/EmptyState';
 import type { TimeTableEntry, DayOfWeek } from '../types';
 import { format, isWithinInterval, parse, getDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -47,13 +47,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }
         const days: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const currentDayName = days[getDay(now)] as DayOfWeek;
         return entries
-            .filter(e => e.days.includes(currentDayName))
-            .sort((a, b) => a.startTime.localeCompare(b.startTime));
+            .filter((e: TimeTableEntry) => e.days.includes(currentDayName))
+            .sort((a: TimeTableEntry, b: TimeTableEntry) => a.startTime.localeCompare(b.startTime));
     }, [entries, now]);
 
     // Categorize classes — memoized so filters don't re-run on every second tick
     const pastClasses = useMemo(() =>
-        todayEntries.filter(entry => {
+        todayEntries.filter((entry: TimeTableEntry) => {
             const end = parse(entry.endTime, 'HH:mm', now);
             return end < now;
         }),
@@ -61,7 +61,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }
     );
 
     const upcomingClasses = useMemo(() =>
-        todayEntries.filter(entry => {
+        todayEntries.filter((entry: TimeTableEntry) => {
             const start = parse(entry.startTime, 'HH:mm', now);
             const end = parse(entry.endTime, 'HH:mm', now);
             return start >= now || isWithinInterval(now, { start, end });
@@ -333,7 +333,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }
                             <div className="space-y-3">
                                 {/* Upcoming Classes with staggered animation */}
                                 <StaggeredList staggerDelay={0.08} direction="left">
-                                    {upcomingClasses.map((entry, index) => (
+                                    {upcomingClasses.map((entry: TimeTableEntry, index: number) => (
                                         <motion.div
                                             key={entry.id}
                                             whileHover={{ x: 4 }}
@@ -371,7 +371,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }
                                                     className="overflow-hidden space-y-3"
                                                 >
                                                     <StaggeredList staggerDelay={0.05} direction="left">
-                                                        {pastClasses.map((entry, index) => (
+                                                        {pastClasses.map((entry: TimeTableEntry, index: number) => (
                                                             <ClassCard
                                                                 key={entry.id}
                                                                 entry={entry}
@@ -398,7 +398,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onEntryClick, onAddEntry }
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
                     >
-                        <EmptyStateEnhanced
+                        <EmptyState
                             title="No classes today!"
                             description="Looks like you have a free day. Why not add some study time or plan for the week ahead?"
                             icon="coffee"
