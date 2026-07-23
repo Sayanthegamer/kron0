@@ -33,11 +33,11 @@ Systematic refactoring of Kron0 to eliminate AI UI anti-patterns, consolidate du
   - [x] Run `npx impeccable detect src/` to verify zero anti-patterns remain
 - [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
-## Phase 4: State Re-render & Performance Optimization
-- [ ] Task: Decouple High-Frequency Focus Timer Ticks
-  - [ ] Isolate Pomodoro timer interval updates to local component/subscriber hook to prevent whole-tree Context re-renders
-  - [ ] Memoize expensive timetable rendering and stats calculations
-- [ ] Task: Verification & Final Quality Pass
-  - [ ] Run `npm run lint` and `npm run build` to confirm zero lint/type errors
-  - [ ] Run `npx impeccable detect src/` to ensure clean audit report
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+## Phase 4: State Re-render & Performance Optimization [checkpoint: fa6d07c]
+- [x] Task: Decouple High-Frequency Focus Timer Ticks
+  - [x] Isolate Pomodoro timer interval updates to local component/subscriber hook to prevent whole-tree Context re-renders
+  - [x] Memoize expensive timetable rendering and stats calculations
+- [x] Task: Verification & Final Quality Pass
+  - [x] Run `npm run lint` and `npm run build` to confirm zero lint/type errors
+  - [x] Run `npx impeccable detect src/` to ensure clean audit report
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
