@@ -2,14 +2,14 @@
 
 Systematic refactoring of Kron0 to eliminate AI UI anti-patterns, consolidate duplicate components, clean up dependencies, implement declarative routing, and optimize state performance.
 
-## Phase 1: Tech Stack & Dependency Alignment
-- [ ] Task: Fix Tailwind CSS Dependency Conflicts
-  - [ ] Standardize `package.json` and PostCSS configuration on stable Tailwind CSS setup
-  - [ ] Verify build and styling integrity via `npm run build`
-- [ ] Task: Integrate Declarative React Router v7
-  - [ ] Replace `useState('dashboard' | 'week' | ...)` in `App.tsx` with React Router `<Routes>` & `<Route>` definitions
-  - [ ] Update `Layout.tsx` navigation links to use router navigation hooks/links
-- [ ] Task: Phase Verification & Checkpoint (Refer to workflow.md)
+## Phase 1: Tech Stack & Dependency Alignment [checkpoint: b5d41f8]
+- [x] Task: Fix Tailwind CSS Dependency Conflicts
+  - [x] Standardize `package.json` and PostCSS configuration on stable Tailwind CSS setup
+  - [x] Verify build and styling integrity via `npm run build`
+- [x] Task: Integrate Declarative React Router v7
+  - [x] Replace `useState('dashboard' | 'week' | ...)` in `App.tsx` with React Router `<Routes>` & `<Route>` definitions
+  - [x] Update `Layout.tsx` navigation links to use router navigation hooks/links
+- [x] Task: Phase Verification & Checkpoint (Refer to workflow.md)
 
 ## Phase 2: Component & Context Consolidation (De-AI-Slopification Part 1)
 - [ ] Task: Merge Duplicate Components
